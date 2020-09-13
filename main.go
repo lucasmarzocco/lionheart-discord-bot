@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&Token, "t", "NzE1MTE4NDk0MTU2NTg3MDI5.Xs4j_w.-STY2s_KyHvgAaMGVWHaRR1JTac", "Bot Token")
+	flag.StringVar(&Token, "t", os.Getenv("DISCORD_TOKEN"), "Bot Token")
 	flag.Parse()
 }
 
@@ -27,7 +27,7 @@ func main() {
 	if port == "" {
 		port = "8000"
 	}
-	
+
 	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + Token)
 
