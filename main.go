@@ -87,7 +87,7 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	s.ChannelMessageSend(user.ID, "Welcome! Thank you for joining the Lionheart community. \n" +
 		"If you haven't taken the test, please do so at this link: \n" +
 		"https://join.lionheart-institution.app/latent-potential \n\n" +
-		"If you have taken the test, please go to #bot-room to verify and get the Members role. \n " +
+		"If you have taken the test, please go to #bot-room to verify and get the Members role. \n" +
 		"To verify, please type .verify <phone number> in which your phone number is of the form 1XXXXXXXXXX.\n" +
 		"Don't worry, your message will be deleted *immediately* after verification. \n\n" +
 		"Example: .verify 11234567890")
