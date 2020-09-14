@@ -121,6 +121,17 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Hello, good sir.")
 	}
 
+	if m.Content == ".clear" {
+		s.ChannelMessageDelete(m.ChannelID, m.ID)
+		
+		channel, _ := s.Channel(m.ChannelID)
+		messages := channel.Messages
+
+		for _, message := range messages {
+			s.ChannelMessageDelete(m.ChannelID, message.ID)
+		}
+	}
+
 	channel, _ := s.Channel(m.ChannelID)
 	if channel.Name == "bot-room" {
 		if strings.Contains(m.Content, ".verify") {
