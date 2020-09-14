@@ -123,12 +123,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == ".clear" {
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
-		
+
 		channel, _ := s.Channel(m.ChannelID)
 		messages := channel.Messages
 
 		for _, message := range messages {
-			s.ChannelMessageDelete(m.ChannelID, message.ID)
+			err := s.ChannelMessageDelete(m.ChannelID, message.ID)
+			fmt.Println(err)
 		}
 	}
 
