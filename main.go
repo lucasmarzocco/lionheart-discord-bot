@@ -85,23 +85,17 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 		}
 	}
 
-	s.ChannelMessageSend(user.ID, "Welcome! Thank you for joining the Lionheart community. \n" +
-		"To begin the journey of becoming a Member, please onboard at this link:\n" +
-		"https://calendly.com/juan-lionheart/welcome-to-lionheart\n\n" +
+	s.ChannelMessageSend(user.ID, "Welcome to the Lionheart beta!\n\n" +
 
-		"Please schedule a time to talk to Juan, the Leader of Lionheart. He will explain a little more about " +
-		"what we're trying to accomplish here and what the assessment (your next step) is trying to achieve.\n\n" +
+		"Our beta program starts on **October 1st**, on a first-come, first-serve basis. Please schedule a time to onboard (link below), where we'll explain how it works and next steps.\n" +
+		"After onboarding, you'll be given your login information and instructions to start the apprenticeship accelerator in the #bot-room channel.\n\n" +
 
-		"When you're done with the assessment, please visit the #bot-room channel in the Lionheart Discord.\n" +
-		"To obtain the member role, I need to verify that you've completed the assessment. To do so,\n" +
-		"please type the command: *.verify <phone number>* where <phone number> is the phone number you\n" +
-		"entered at the start of the test. \n\n" +
+		"Feel free to ask any questions in #questions and ping any of the available mods.\n" +
+		"We're excited to have you be part of our accelerator! Please abide by our #code-of-conduct and #rules while at Lionheart.\n\n" +
 
-		"Form: .verify 1XXXXXXXXXX \n" +
-		"Example: .verify 11234567890 \n\n" +
+		"See you soon!\n\n" +
 
-		"Thank you for joining us. We hope you enjoy your time here. Please reach out to any Admins or Moderators " +
-		"if you need any assistance.")
+		"Link to onboard: https://calendly.com/juan-lionheart/welcome-to-lionheart")
 }
 
 // This function will be called (due to AddHandler above) every time a new
