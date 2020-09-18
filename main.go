@@ -87,7 +87,7 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 
 	s.ChannelMessageSend(user.ID, "Welcome to the Lionheart beta!\n\n" +
 
-		"Our beta program starts on **October 1st**, on a first-come, first-serve basis. Please schedule a time to onboard (link below), where we'll explain how it works and next steps.\n" +
+		"Our beta program starts on **October 1st**, on a first-come, first-serve basis. Please schedule a time to onboard where we'll explain how it works and next steps.\n" +
 		"After onboarding, you'll be given your login information and instructions to start the apprenticeship accelerator in the #bot-room channel.\n\n" +
 
 		"Feel free to ask any questions in #questions and ping any of the available mods.\n" +

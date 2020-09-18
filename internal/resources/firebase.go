@@ -2,6 +2,7 @@ package fb
 
 import (
 	"os"
+	"fmt"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/db"
@@ -41,4 +42,16 @@ func UserExists(phone string) bool {
 	}
 
 	return false
+}
+
+func GetUsers() []User {
+	var Users []User
+	ref := fb.NewRef("users")
+	err := ref.Get(context.Background(), &Users)
+	if err != nil {
+		return nil
+	}
+
+	fmt.Println(Users)
+	return Users
 }
