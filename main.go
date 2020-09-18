@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 
@@ -121,17 +122,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Hello, good sir.")
 	}
 
-	if m.Content == ".clear" {
+	if strings.Contains(m.Content, ".clear") {
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 
-		channel, _ := s.Channel(m.ChannelID)
-		messages := channel.Messages
+		values := strings.Split(m.Content, " ")
+		v, _ := strconv.Atoi(values[1])
 
-		fmt.Println(len(messages))
-
+		messages, _ := s.ChannelMessages(m.ChannelID, v, "", "", "")
 		for _, message := range messages {
-			err := s.ChannelMessageDelete(m.ChannelID, message.ID)
-			fmt.Println(err)
+			s.ChannelMessageDelete(m.ChannelID, message.ID)
 		}
 	}
 
