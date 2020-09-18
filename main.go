@@ -127,6 +127,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		channel, _ := s.Channel(m.ChannelID)
 		messages := channel.Messages
 
+		fmt.Println(len(messages))
+
 		for _, message := range messages {
 			err := s.ChannelMessageDelete(m.ChannelID, message.ID)
 			fmt.Println(err)
