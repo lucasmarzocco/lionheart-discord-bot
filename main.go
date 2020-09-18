@@ -116,6 +116,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Hello, good sir.")
 	}
 
+	if m.Content == ".db" {
+		fb.GetUsers()
+	}
+
 	if strings.Contains(m.Content, ".clear") {
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 
