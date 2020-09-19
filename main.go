@@ -24,6 +24,8 @@ func init() {
 }
 
 func main() {
+	fb.GetNumUsers()
+	return
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
@@ -117,18 +119,22 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".db" {
-		fb.GetUsers()
+		val := fb.GetNumUsers()
+		num := strconv.Itoa(val)
+		s.ChannelMessageSend(m.ChannelID, "There are currently " + num + " users who have taken the test.")
 	}
 
 	if strings.Contains(m.Content, ".clear") {
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 
 		values := strings.Split(m.Content, " ")
-		v, _ := strconv.Atoi(values[1])
 
-		messages, _ := s.ChannelMessages(m.ChannelID, v, "", "", "")
-		for _, message := range messages {
-			s.ChannelMessageDelete(m.ChannelID, message.ID)
+		if len(values) > 1 {
+			v, _ := strconv.Atoi(values[1])
+			messages, _ := s.ChannelMessages(m.ChannelID, v, "", "", "")
+			for _, message := range messages {
+				s.ChannelMessageDelete(m.ChannelID, message.ID)
+			}
 		}
 	}
 
@@ -147,9 +153,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 						if role.Name == "Guests" {
 							s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, role.ID)
 						}
-						if role.Name == "Members" {
+						if role.Name == "Users" {
 							s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
-							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+" has been verified. Member role granted.")
+							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+" has been verified. Users role granted.")
 						}
 					}
 				}

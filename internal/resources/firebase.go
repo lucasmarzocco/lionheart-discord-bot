@@ -1,7 +1,6 @@
 package fb
 
 import (
-	"os"
 	"fmt"
 
 	firebase "firebase.google.com/go/v4"
@@ -14,9 +13,11 @@ var fb *db.Client
 
 func init() {
 	if fb == nil {
-		opt := option.WithCredentialsJSON([]byte(os.Getenv("ACCOUNT")))
+		opt := option.WithCredentialsFile("wow.json")
+		//opt := option.WithCredentialsJSON([]byte(os.Getenv("ACCOUNT")))
 		config := &firebase.Config{
-			DatabaseURL: os.Getenv("DB_URL"),
+			//DatabaseURL: os.Getenv("DB_URL"),
+			DatabaseURL: "https://lionheart-7b6c9.firebaseio.com/",
 		}
 
 		f, _ := firebase.NewApp(context.Background(), config, opt)
@@ -44,14 +45,13 @@ func UserExists(phone string) bool {
 	return false
 }
 
-func GetUsers() []User {
-	var Users []User
+func GetNumUsers() int {
+	v := map[string]User{}
 	ref := fb.NewRef("users")
-	err := ref.Get(context.Background(), &Users)
+	err := ref.Get(context.Background(), &v)
 	if err != nil {
-		return nil
+		fmt.Println(err)
 	}
 
-	fmt.Println(Users)
-	return Users
+	return len(v)
 }
