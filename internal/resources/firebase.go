@@ -2,6 +2,7 @@ package fb
 
 import (
 	"fmt"
+	"os"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/db"
@@ -13,11 +14,11 @@ var fb *db.Client
 
 func init() {
 	if fb == nil {
-		opt := option.WithCredentialsFile("wow.json")
-		//opt := option.WithCredentialsJSON([]byte(os.Getenv("ACCOUNT")))
+		//opt := option.WithCredentialsFile("wow.json")
+		opt := option.WithCredentialsJSON([]byte(os.Getenv("ACCOUNT")))
 		config := &firebase.Config{
-			//DatabaseURL: os.Getenv("DB_URL"),
-			DatabaseURL: "https://lionheart-7b6c9.firebaseio.com/",
+			DatabaseURL: os.Getenv("DB_URL"),
+			//DatabaseURL: "https://lionheart-7b6c9.firebaseio.com/",
 		}
 
 		f, _ := firebase.NewApp(context.Background(), config, opt)
