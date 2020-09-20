@@ -24,8 +24,6 @@ func init() {
 }
 
 func main() {
-	fb.GetNumUsers()
-	return
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
