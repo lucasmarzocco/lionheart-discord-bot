@@ -79,9 +79,11 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	user, _ := s.UserChannelCreate(m.User.ID)
 	roles, _ := s.GuildRoles(m.GuildID)
+	fmt.Println(roles)
 	for _, role := range roles {
 		if role.Name == "Guests" {
-			s.GuildMemberRoleAdd(m.GuildID, m.User.ID, role.ID)
+			err := s.GuildMemberRoleAdd(m.GuildID, m.User.ID, role.ID)
+			fmt.Println(err)
 		}
 	}
 
