@@ -78,14 +78,14 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	user, _ := s.UserChannelCreate(m.User.ID)
-	roles, _ := s.GuildRoles(m.GuildID)
+	/*roles, _ := s.GuildRoles(m.GuildID)
 	fmt.Println(roles)
 	for _, role := range roles {
 		if role.Name == "Guests" {
 			err := s.GuildMemberRoleAdd(m.GuildID, m.User.ID, role.ID)
 			fmt.Println(err)
 		}
-	}
+	} */
 
 	s.ChannelMessageSend(user.ID, "Welcome to the Lionheart beta!\n\n" +
 
@@ -150,9 +150,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				if user {
 					roles, _ := s.GuildRoles(m.GuildID)
 					for _, role := range roles {
-						if role.Name == "Guests" {
-							s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, role.ID)
-						}
 						if role.Name == "Users" {
 							s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
 							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+" has been verified. Users role granted.")
