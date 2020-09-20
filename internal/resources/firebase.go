@@ -36,14 +36,14 @@ func UserExists(phone string) (bool, string) {
 
 	if User.PersonalInfo.Name != "" {
 		if User.Verified {
-			return false, "User has already been verified with that phone number."
+			return false, "Someone has already been verified with that phone number."
 		} else {
 			ref.Child("verified").Set(context.Background(), true)
 			return true, ""
 		}
 	}
 
-	return false, "Sorry, user under that phone number not found."
+	return false, "The phone number cannot be found. Please check to make sure you typed in the correct phone number."
 }
 
 func GetNumUsers() int {
