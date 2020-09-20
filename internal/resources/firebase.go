@@ -26,24 +26,24 @@ func init() {
 	}
 }
 
-func UserExists(phone string) bool {
+func UserExists(phone string) (bool, string) {
 	var User User
 	ref := fb.NewRef("users").Child(phone)
 	err := ref.Get(context.Background(), &User)
 	if err != nil {
-		return false
+		return false, "Error: searching user has failed"
 	}
 
 	if User.PersonalInfo.Name != "" {
 		if User.Verified {
-			return false
+			return false, "User has already been verified with that phone number."
 		} else {
 			ref.Child("verified").Set(context.Background(), true)
-			return true
+			return true, ""
 		}
 	}
 
-	return false
+	return false, "Sorry, user under that phone number not found."
 }
 
 func GetNumUsers() int {

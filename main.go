@@ -103,13 +103,12 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	channel, _ := s.Channel(m.ChannelID)
 
-	// Ignore all messages created by the bot itself
-	// This isn't required in this specific example but it's a good practice.
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-	// If the message is "ping" reply with "Pong!"
+
 	if m.Content == ".alive" {
 		s.ChannelMessageSend(m.ChannelID, "Hello, yes, I'm alive, good sir.")
 	}
@@ -138,14 +137,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	channel, _ := s.Channel(m.ChannelID)
 	if channel.Name == "bot-room" {
 		if strings.Contains(m.Content, ".verify") {
 			s.ChannelMessageDelete(m.ChannelID, m.ID)
 			values := strings.Split(m.Content, " ")
 
 			if len(values) > 1 {
-				user := fb.UserExists(values[1])
+				user, message := fb.UserExists(values[1])
 
 				if user {
 					roles, _ := s.GuildRoles(m.GuildID)
@@ -156,6 +154,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 						}
 					}
 				}
+				s.ChannelMessageSend(m.ChannelID, message)
 			}
 		}
 	}
