@@ -138,9 +138,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		}
 
-		modFeedback, _ := s.Channel(id)
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
-		s.ChannelMessageSend(modFeedback.ID, "User ID: " + m.Author.ID + " has submitted feedbacK: \n" + m.Content)
+		s.ChannelMessageSend(id, "User ID: " + m.Author.ID + " has submitted feedbacK: \n" + m.Content)
 	}
 
 	if channel.Name == "bot-room" {
@@ -169,7 +168,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func truncatePhoneNumber(number string) {
-	
+
 }
 
 func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
