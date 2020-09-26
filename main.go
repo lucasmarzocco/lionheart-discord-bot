@@ -131,10 +131,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if channel.Name == "feedback" {
 		var id string
-		c, _ := s.Guild(m.GuildID)
-		fmt.Println(c)
-		fmt.Println(len(c.Channels))
-		for _, channel := range c.Channels {
+		c, _ := s.GuildChannels(m.GuildID)
+		for _, channel := range c {
 			fmt.Println(channel.Name)
 			if channel.Name == "mod-feedback" {
 				id = channel.ID
