@@ -112,7 +112,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".db" {
 		val := fb.GetNumUsers()
 		num := strconv.Itoa(val)
-		s.ChannelMessageSend(m.ChannelID, "There are currently "+num+" users who have taken the test.")
+		s.ChannelMessageSend(m.ChannelID, "There are currently " + num + " users who have taken the test.")
 	}
 
 	if strings.Contains(m.Content, ".clear") {
@@ -130,19 +130,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if channel.Name == "feedback" {
-		var id string
 		c, _ := s.GuildChannels(m.GuildID)
 		for _, channel := range c {
-			fmt.Println(channel.Name)
 			if channel.Name == "mod-feedback" {
-				id = channel.ID
+				s.ChannelMessageDelete(m.ChannelID, m.ID)
+				s.ChannelMessageSend(channel.ID, "User ID: " + m.Author.ID + "(" + m.Author.Username + ") has submitted feedback: \n" + m.Content)
+				return
 			}
 		}
-
-		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
-		fmt.Println(err)
-		_, err = s.ChannelMessageSend(id, "User ID: " + m.Author.ID + " has submitted feedbacK: \n" + m.Content)
-		fmt.Println(err)
 	}
 
 	if channel.Name == "bot-room" {
