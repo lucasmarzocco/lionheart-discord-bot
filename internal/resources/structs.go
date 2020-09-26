@@ -30,3 +30,8 @@ type Trait struct {
 	NormalScore float64
 	Min         float64
 }
+
+type LeaderboardUser struct {
+	Points int64
+	Messages int64
+}

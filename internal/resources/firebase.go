@@ -56,3 +56,18 @@ func GetNumUsers() int {
 
 	return len(v)
 }
+
+func WriteLeaderboards(user string) {
+	boardUser := LeaderboardUser{}
+	ref := fb.NewRef("leaderboards").Child(user)
+	err := ref.Get(context.Background(), &boardUser)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	boardUser.Points += 1
+	boardUser.Messages += 1
+
+	ref.Set(context.Background(), boardUser)
+}

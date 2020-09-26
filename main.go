@@ -120,7 +120,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".db" {
 		val := fb.GetNumUsers()
 		num := strconv.Itoa(val)
-		s.ChannelMessageSend(m.ChannelID, "There are currently " + num + " users who have taken the test.")
+		s.ChannelMessageSend(m.ChannelID, "There are currently "+num+" users who have taken the test.")
 	}
 
 	if strings.Contains(m.Content, ".clear") {
@@ -158,4 +158,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		}
 	}
+
+	updateLeaderboards(s, m)
+}
+
+func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
+	fb.WriteLeaderboards(m.Author.ID)
 }
