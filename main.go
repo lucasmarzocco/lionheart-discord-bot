@@ -129,6 +129,20 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
+	if channel.Name == "feedback" {
+		var id string
+		c, _ := s.Guild(m.GuildID)
+		for _, channel := range c.Channels {
+			if channel.Name == "mod-feedback" {
+				id = channel.ID
+			}
+		}
+
+		modFeedback, _ := s.Channel(id)
+		s.ChannelMessageDelete(m.ChannelID, m.ID)
+		s.ChannelMessageSend(modFeedback.ID, "User ID: " + m.Author.ID + " has submitted feedbacK: \n" + m.Content)
+	}
+
 	if channel.Name == "bot-room" {
 		if strings.Contains(m.Content, ".verify") {
 			s.ChannelMessageDelete(m.ChannelID, m.ID)
@@ -152,6 +166,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	//updateLeaderboards(s, m)
+}
+
+func truncatePhoneNumber(number string) {
+
+	if strings.Contains(number, "(") {
+		strings.rep
+
+	}
+
+
 }
 
 func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
