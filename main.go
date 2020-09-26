@@ -169,13 +169,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func truncatePhoneNumber(number string) {
-
-	if strings.Contains(number, "(") {
-		strings.rep
-
-	}
-
-
+	
 }
 
 func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
