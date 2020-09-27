@@ -175,8 +175,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		emoji := values[1]
 		emojis, _ := s.GuildEmojis(m.GuildID)
 
+		fmt.Println(len(emojis))
+
 		for _, e := range emojis {
-			if emoji == e.Name {
+			fmt.Println(e)
+			if e.Name == emoji{
 				s.ChannelMessageSend(m.ChannelID, e.ID)
 			}
 		}
