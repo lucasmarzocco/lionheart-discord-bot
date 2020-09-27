@@ -173,16 +173,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		values := strings.Split(m.Content, " ")
 		emoji := values[1]
-		emojis, _ := s.GuildEmojis(m.GuildID)
-
-		fmt.Println(len(emojis))
-
-		for _, e := range emojis {
-			fmt.Println(e)
-			if e.Name == emoji{
-				s.ChannelMessageSend(m.ChannelID, e.ID)
-			}
-		}
+		s.ChannelMessageSend(m.ChannelID, emoji)
 	}
 
 	//updateLeaderboards(s, m)
