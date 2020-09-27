@@ -189,6 +189,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		emoji := values[2]
 		role := values[3]
 
+		fmt.Println(message, emoji, role)
+
 		Emojis[emoji] = message
 
 		//.addrole <messageID> <emoji> <roleID>
@@ -196,7 +198,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, r := range roles {
 			fmt.Println(r)
-			if role == r.Name {
+			if strings.EqualFold(role, r.Name){
 				Roles[message] = r.ID
 			}
 		}
