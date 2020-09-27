@@ -195,7 +195,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, r := range roles {
-			if r.Name == role {
+			fmt.Println(r)
+			if role == r.Name {
 				Roles[message] = r.ID
 			}
 		}
