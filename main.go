@@ -17,6 +17,7 @@ import (
 var (
 	Token string
 	Emojis map[string]string
+	Roles map[string]string
 )
 
 func init() {
@@ -24,6 +25,7 @@ func init() {
 	flag.Parse()
 
 	Emojis = map[string]string{}
+	Roles = map[string]string{}
 }
 
 func main() {
@@ -69,6 +71,14 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 	fmt.Println("There was a message react....")
 
+	if val, ok := Emojis[m.Emoji.Name]; ok {
+
+		if val == m.MessageID {
+			s.GuildMemberRoleAdd(m.GuildID, Roles[m.MessageID], m.MessageReaction.UserID)
+		}
+	}
+
+
 	fmt.Println(m.UserID)
 	fmt.Println(m.ChannelID)
 	fmt.Println(m.GuildID)
@@ -77,6 +87,9 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 	a, _ := s.User(m.UserID)
 	fmt.Println(a.Username)
+
+	//guild ID, role id, memberid
+	//s.GuildMemberRoleAdd()
 }
 
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
@@ -169,11 +182,20 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	if strings.Contains(m.Content, ".emoji") {
-
+	if strings.Contains(m.Content, ".addrole") {
 		values := strings.Split(m.Content, " ")
-		emoji := values[1]
-		s.ChannelMessageSend(m.ChannelID, emoji)
+		message := values[1]
+		emoji := values[2]
+		role := values[3]
+
+		Emojis[emoji] = message
+		Roles[message] = role
+		//.addrole <messageID> <emoji> <roleID>
+	}
+
+	if m.Content == ".done" {
+		fb.WriteData("emojis", Emojis)
+		fb.WriteData("roles", Roles)
 	}
 
 	//updateLeaderboards(s, m)

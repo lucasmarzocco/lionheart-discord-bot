@@ -71,3 +71,8 @@ func WriteLeaderboards(user string) {
 
 	ref.Set(context.Background(), boardUser)
 }
+
+func WriteData(child string, data map[string]string) {
+	ref := fb.NewRef(child)
+	ref.Set(context.Background(), data)
+}
