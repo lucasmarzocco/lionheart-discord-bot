@@ -74,7 +74,8 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 
 		if val == m.MessageID {
-			s.GuildMemberRoleAdd(m.GuildID, Roles[m.MessageID], m.MessageReaction.UserID)
+			err := s.GuildMemberRoleAdd(m.GuildID, Roles[m.MessageID], m.MessageReaction.UserID)
+			fmt.Println(err)
 		}
 	}
 
@@ -189,8 +190,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		role := values[3]
 
 		Emojis[emoji] = message
-		Roles[message] = role
+
 		//.addrole <messageID> <emoji> <roleID>
+
+		roles, _ := s.GuildRoles(m.GuildID)
+		for _, r := range roles {
+			if r.Name == role {
+				Roles[message] = r.ID
+			}
+		}
 	}
 
 	if m.Content == ".done" {
