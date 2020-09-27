@@ -16,11 +16,14 @@ import (
 // Variables used for command line parameters
 var (
 	Token string
+	Emojis map[string]string
 )
 
 func init() {
 	flag.StringVar(&Token, "t", os.Getenv("DISCORD_TOKEN"), "Bot Token")
 	flag.Parse()
+
+	Emojis = map[string]string{}
 }
 
 func main() {
@@ -140,6 +143,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
+	if channel.Name == "3-skill-selection-🙋" {
+		s.ChannelMessageSend(m.ChannelID, "That ^ message ID is: " + m.Message.ID)
+	}
+
 	if channel.Name == "bot-room" {
 		if strings.Contains(m.Content, ".verify") {
 			s.ChannelMessageDelete(m.ChannelID, m.ID)
@@ -158,6 +165,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					}
 				}
 				s.ChannelMessageSend(m.ChannelID, message)
+			}
+		}
+	}
+
+	if strings.Contains(m.Content, ".emoji") {
+
+		values := strings.Split(m.Content, " ")
+		emoji := values[1]
+		emojis, _ := s.GuildEmojis(m.GuildID)
+
+		for _, e := range emojis {
+			if emoji == e.Name {
+				s.ChannelMessageSend(m.ChannelID, e.ID)
 			}
 		}
 	}
