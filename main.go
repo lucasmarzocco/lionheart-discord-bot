@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"regexp"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -94,7 +95,7 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 
 	s.ChannelMessageSend(user.ID, "Welcome to Lionheart! \n\n " +
 
-		"#rules - Explains our rules and code of conduct while in Lionheart \n " +
+		"#rules - Explains our rules and code of conduct while in Lionheart. \n " +
 		"#questions - Got questions? Ask here! \n\n " +
 
 		"#1-start-here - An overview of Lionheart \n " +
@@ -161,7 +162,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			values := strings.Split(m.Content, " ")
 
 			if len(values) > 1 {
-				user, message := fb.UserExists(values[1])
+				user, message := fb.UserExists("1" + fixPhoneNumber(values[1]))
 
 				if user {
 					roles, _ := s.GuildRoles(m.GuildID)
@@ -201,11 +202,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
+func fixPhoneNumber(number string) string {
+	reg, err := regexp.Compile("[^0-9]+")
+	if err != nil {
+		fmt.Println(err)
+	}
 
-
-
-func truncatePhoneNumber(number string) {
-
+	return reg.ReplaceAllString(number, "")
 }
 
 func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
