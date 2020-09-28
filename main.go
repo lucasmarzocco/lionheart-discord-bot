@@ -72,9 +72,9 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	fmt.Println("There was a message react....")
 
 	if val, ok := Emojis[m.Emoji.Name]; ok {
-
 		if val == m.MessageID {
-			err := s.GuildMemberRoleAdd(m.GuildID, Roles[m.MessageID], m.UserID)
+			user, _ := s.User(m.UserID)
+			err := s.GuildMemberRoleAdd(m.GuildID, Roles[m.MessageID], user.ID)
 			fmt.Println(err)
 		}
 	}
