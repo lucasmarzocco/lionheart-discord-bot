@@ -74,6 +74,17 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
+
+			for _, r := range member.Roles {
+				if r == "Users" {
+					if len(member.Roles) == 3 {
+						user, _ := s.UserChannelCreate(m.UserID)
+						s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions-!?")
+						return
+					}
+				}
+			}
+
 			err := s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
 			fmt.Println(err)
 		}
@@ -85,34 +96,32 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	user, _ := s.UserChannelCreate(m.User.ID)
 
-	s.ChannelMessageSend(user.ID, "Welcome to the Lionheart beta!\n\n" +
+	s.ChannelMessageSend(user.ID, "Welcome to Lionheart! \n\n " +
 
-		"Our beta program starts on **October 1st**, on a first-come, first-serve basis. Please schedule a time to onboard where we'll explain how it works and next steps.\n" +
-		"After onboarding, you'll be given your login information and instructions to start the apprenticeship accelerator in the #bot-room channel.\n\n" +
+		"#rules - Explains our rules and code of conduct while in Lionheart \n " +
+		"#questions - Got questions? Ask here! \n\n " +
 
-		"Feel free to ask any questions in #questions and ping any of the available mods.\n" +
-		"We're excited to have you be part of our accelerator! Please abide by our #code-of-conduct and #rules while at Lionheart.\n\n" +
+		"#1-start-here - An overview of Lionheart \n " +
+		"#2-verify - Verify your phone number after you've taken the skills assessment. No bots please. \n " +
+		"#3-skill-selection - After you've verified your phone number, select the skill to level and get grouped with a pod. \n\n " +
 
-		"See you soon!\n\n" +
+		"Link to skills assessment: https://join.lionheart-institution.app/latent-potential \n " +
+		"If you need personalized assistance, schedule a time to chat with Juan: \n " +
+		"https://calendly.com/juan-lionheart/welcome-to-lionheart \n\n" +
 
-		"Link to onboard: https://calendly.com/juan-lionheart/welcome-to-lionheart")
+		"Thanks for joining. Reach out to any of the Admins or Mods if you need any assistance during your journey.")
 }
 
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	channel, _ := s.Channel(m.ChannelID)
-
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 
 	if m.Content == ".alive" {
 		s.ChannelMessageSend(m.ChannelID, "Hello, yes, I'm alive, good sir.")
-	}
-
-	if m.Content == ".hello" {
-		s.ChannelMessageSend(m.ChannelID, "Hello, good sir.")
 	}
 
 	if m.Content == ".db" {
@@ -195,6 +204,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fb.WriteData("emojis", Emojis)
 	}
 }
+
+
+
 
 func truncatePhoneNumber(number string) {
 
