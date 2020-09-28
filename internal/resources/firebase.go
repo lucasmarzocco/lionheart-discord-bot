@@ -38,7 +38,7 @@ func UserExists(phone string) (bool, string) {
 		if User.Verified {
 			return false, "Someone has already been verified with that phone number."
 		} else {
-			ref.Child("verified").Set(context.Background(), true)
+			ref.Child("Verified").Set(context.Background(), true)
 			return true, ""
 		}
 	}

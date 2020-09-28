@@ -141,7 +141,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	if channel.Name == "feedback" {
+	if channel.Name == "anon-feedback" {
 		c, _ := s.GuildChannels(m.GuildID)
 		for _, channel := range c {
 			if channel.Name == "mod-feedback" {
