@@ -74,13 +74,17 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 		if val == m.MessageID {
 			fmt.Println(m.UserID, m.MessageReaction.UserID)
-			err := s.GuildMemberRoleAdd(m.GuildID, Roles[m.MessageID], m.MessageReaction.UserID)
+			err := s.GuildMemberRoleAdd(m.GuildID, Roles[m.MessageID], m.UserID)
 			fmt.Println(err)
 		}
 	}
-	
-	//guild ID, role id, memberid
-	//s.GuildMemberRoleAdd()
+
+	g, _ := s.Guild(m.GuildID)
+	for _, user := range g.Members {
+		fmt.Println(user.User.ID)
+		fmt.Println(user.User.Username)
+		fmt.Println("-------------------")
+	}
 }
 
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
