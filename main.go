@@ -173,7 +173,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if strings.Contains(m.Content, ".addrole") {
-		values := strings.Split(m.Content, " ")
+		values := strings.Split(m.Content, "|")
 		message := values[1]
 		emoji := values[2]
 		role := values[3]
@@ -181,8 +181,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fmt.Println(message, emoji, role)
 
 		Emojis[emoji] = message
-
-		//.addrole <messageID> <emoji> <roleID>
 
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, r := range roles {
