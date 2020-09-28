@@ -79,7 +79,10 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 		}
 	}
 
+	fmt.Println(m.GuildID, m.UserID, m.MessageID, m.ChannelID, m.Emoji, m.MessageReaction)
+
 	g, _ := s.Guild(m.MessageReaction.GuildID)
+	fmt.Println(len(g.Members))
 	for _, user := range g.Members {
 		fmt.Println(user.User.ID)
 		fmt.Println(user.User.Username)
