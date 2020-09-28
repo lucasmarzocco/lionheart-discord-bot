@@ -35,3 +35,8 @@ type LeaderboardUser struct {
 	Points int64
 	Messages int64
 }
+
+type Emoji struct {
+	MessageID string
+	RoleID    string
+}

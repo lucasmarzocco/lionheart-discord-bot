@@ -16,17 +16,17 @@ import (
 // Variables used for command line parameters
 var (
 	Token string
-	Emojis map[string]string
-	Roles map[string]string
+	Emojis map[string]fb.Emoji
 )
 
 func init() {
 	flag.StringVar(&Token, "t", os.Getenv("DISCORD_TOKEN"), "Bot Token")
 	flag.Parse()
 
-	Emojis = map[string]string{}
-	Roles = map[string]string{}
+	Emojis = map[string]fb.Emoji{}
 }
+
+
 
 func main() {
 	port := os.Getenv("PORT")
@@ -72,9 +72,9 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	fmt.Println("There was a message react....")
 
 	if val, ok := Emojis[m.Emoji.Name]; ok {
-		if val == m.MessageID {
+		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
-			err := s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, Roles[m.MessageID]))
+			err := s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
 			fmt.Println(err)
 		}
 	}
@@ -177,23 +177,22 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		message := values[1]
 		emoji := values[2]
 		role := values[3]
-
-		fmt.Println(message, emoji, role)
-
-		Emojis[emoji] = message
+		e := fb.Emoji{}
+		e.MessageID = message
 
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, r := range roles {
 			fmt.Println(r)
 			if strings.EqualFold(role, r.Name){
-				Roles[message] = r.ID
+				e.RoleID = r.ID
 			}
 		}
+
+		Emojis[emoji] = e
 	}
 
 	if m.Content == ".done" {
 		fb.WriteData("emojis", Emojis)
-		fb.WriteData("roles", Roles)
 	}
 
 	//updateLeaderboards(s, m)
