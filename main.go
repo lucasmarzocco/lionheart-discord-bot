@@ -74,16 +74,11 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
-			fmt.Println(len(member.Roles))
 
-			for _, r := range member.Roles {
-				if strings.EqualFold(r, "Users") {
-					if len(member.Roles) == 3 {
-						user, _ := s.UserChannelCreate(m.UserID)
-						s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions-!?")
-						return
-					}
-				}
+			if len(member.Roles) == 3 {
+				user, _ := s.UserChannelCreate(m.UserID)
+				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions-!?")
+				return
 			}
 
 			err := s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
