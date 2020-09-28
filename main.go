@@ -23,7 +23,7 @@ func init() {
 	flag.StringVar(&Token, "t", os.Getenv("DISCORD_TOKEN"), "Bot Token")
 	flag.Parse()
 
-	Emojis = map[string]fb.Emoji{}
+	Emojis = fb.LoadData()
 }
 
 
@@ -147,7 +147,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if channel.Name == "3-skill-selection-🙋" {
-		s.ChannelMessageSend(m.ChannelID, "That ^ message ID is: " + m.Message.ID)
+		fmt.Println("That ^ message ID is: " + m.Message.ID)
 	}
 
 	if channel.Name == "bot-room" {
@@ -194,8 +194,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".done" {
 		fb.WriteData("emojis", Emojis)
 	}
-
-	//updateLeaderboards(s, m)
 }
 
 func truncatePhoneNumber(number string) {

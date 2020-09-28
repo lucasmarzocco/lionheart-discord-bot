@@ -77,7 +77,13 @@ func WriteData(child string, data map[string]Emoji) {
 	ref.Set(context.Background(), data)
 }
 
-func LoadData() {
+func LoadData() map[string]Emoji {
+	v := map[string]Emoji{}
+	ref := fb.NewRef("emojis")
+	err := ref.Get(context.Background(), &v)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-
+	return v
 }
