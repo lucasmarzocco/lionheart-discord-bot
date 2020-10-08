@@ -85,7 +85,7 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 				fmt.Println(m.Emoji)
 				fmt.Println(m.Emoji.ID)
 				fmt.Println(m.Emoji.Name)
-				fmt.Println(s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, user.ID))
+				fmt.Println(s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID))
 				return
 			}
 
