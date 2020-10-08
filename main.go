@@ -27,8 +27,6 @@ func init() {
 	Emojis = fb.LoadData()
 }
 
-
-
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -72,26 +70,21 @@ func main() {
 
 
 func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
-
-	fmt.Println("There was a message react....")
+	fmt.Println("There was a message react.")
 
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
 
 			if len(member.Roles) == 3 {
+				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
 				user, _ := s.UserChannelCreate(m.UserID)
-				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions.")
-				fmt.Println(m.Emoji)
-				fmt.Println(m.Emoji.ID)
-				fmt.Println(m.Emoji.Name)
-				fmt.Println(s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID))
+				s.ChannelMessageSend(user.ID, "Currently users can only have 2 skills to level up at once. If you chose a skill on accident, please post in #questions. Thanks!")
 				return
 			}
 
-			err := s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
-			fmt.Println(err)
-			fmt.Println("Message react complete...")
+			s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
+			fmt.Println("Member role added")
 		}
 	}
 }
