@@ -82,7 +82,7 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 			if len(member.Roles) == 3 {
 				user, _ := s.UserChannelCreate(m.UserID)
 				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions.")
-				fmt.Println(s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.ID, user.ID))
+				fmt.Println(s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.APIName(), user.ID))
 				return
 			}
 
