@@ -68,6 +68,9 @@ func main() {
 	dg.Close()
 }
 
+
+
+
 func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 	fmt.Println("There was a message react....")
@@ -78,8 +81,8 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 			if len(member.Roles) == 3 {
 				user, _ := s.UserChannelCreate(m.UserID)
-				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions-!?")
-				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.ID, user.ID)
+				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions")
+				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, user.ID)
 				return
 			}
 
@@ -109,6 +112,9 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 
 		"Thanks for joining. Reach out to any of the Admins or Mods if you need any assistance during your journey.")
 }
+
+
+
 
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
