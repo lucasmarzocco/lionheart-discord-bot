@@ -81,17 +81,16 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 			if len(member.Roles) == 3 {
 				user, _ := s.UserChannelCreate(m.UserID)
-				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions")
-				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, user.ID)
+				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions.")
+				fmt.Println(s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.ID, user.ID))
 				return
 			}
 
 			err := s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
 			fmt.Println(err)
+			fmt.Println("Message react complete...")
 		}
 	}
-
-	fmt.Println("Message react complete...")
 }
 
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
