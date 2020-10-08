@@ -46,7 +46,7 @@ func main() {
 	// Register the messageCreate func as a callback for MessageCreate events.
 	dg.AddHandler(messageCreate)
 	dg.AddHandler(discordJoin)
-	dg.AddHandler(messageReact)
+	dg.AddHandler(messageReactAdd)
 
 	// In this example, we only care about receiving message events.
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
@@ -68,7 +68,7 @@ func main() {
 	dg.Close()
 }
 
-func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
+func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 	fmt.Println("There was a message react....")
 
@@ -79,6 +79,7 @@ func messageReact(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 			if len(member.Roles) == 3 {
 				user, _ := s.UserChannelCreate(m.UserID)
 				s.ChannelMessageSend(user.ID, "Sorry! Currently you can only have 2 categories. If this was a mistake, please ask in #questions-!?")
+				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.ID, user.ID)
 				return
 			}
 
@@ -146,7 +147,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		for _, channel := range c {
 			if channel.Name == "mod-feedback" {
 				s.ChannelMessageDelete(m.ChannelID, m.ID)
-				s.ChannelMessageSend(channel.ID, "User ID: " + m.Author.ID + "(" + m.Author.Username + ") has submitted feedback: \n" + m.Content)
+				s.ChannelMessageSend(channel.ID, "User ID: " + m.Author.ID + " (" + m.Author.Username+ ") has submitted feedback: \n" + m.Content)
 				return
 			}
 		}
