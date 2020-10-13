@@ -1,20 +1,24 @@
 package fb
 
 type Personal struct {
-	Name string
-	Email string
-	Phone string
-	MorF  string
-	Gender string
+	Name      string
+	Email     string
+	Phone     string
+	Gender    string
 	Ethnicity string
 	Education string
-	Country string
-	USA     bool
-	State	string
-	City    string
-	Live    string
-	Religion string
-	Marital string
+	CountryFrom   string
+	CountryNow      string
+	State     string
+	City      string
+	Religion  string
+	Marital   string
+}
+
+type Discord struct {
+	ID       string
+	Username string
+	Nick     string
 }
 
 type User struct {
@@ -22,6 +26,8 @@ type User struct {
 	Subtraits    map[string]*Trait
 	Traits       map[string]*Trait
 	Verified     bool
+	Roles        []string
+	Discord      Discord
 }
 
 type Trait struct {
@@ -39,4 +45,21 @@ type LeaderboardUser struct {
 type Emoji struct {
 	MessageID string
 	RoleID    string
+}
+
+type PodMember struct {
+	DiscordInfo Discord
+	PhoneNumber string
+}
+
+type Pod struct {
+	Limit int
+	Size  int
+	Members []PodMember
+	Skill string
+	RoomName string
+}
+
+func (p PodMember) String() string {
+	return p.DiscordInfo.Nick
 }
