@@ -6,17 +6,18 @@ import (
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	"os"
 )
 
 var fb *db.Client
 
 func init() {
 	if fb == nil {
-		opt := option.WithCredentialsFile("wow.json")
-		//opt := option.WithCredentialsJSON([]byte(os.Getenv("ACCOUNT")))
+		//opt := option.WithCredentialsFile("wow.json")
+		opt := option.WithCredentialsJSON([]byte(os.Getenv("ACCOUNT")))
 		config := &firebase.Config{
-			//DatabaseURL: os.Getenv("DB_URL"),
-			DatabaseURL: "https://lionheart-7b6c9.firebaseio.com/",
+			DatabaseURL: os.Getenv("DB_URL"),
+			//DatabaseURL: "https://lionheart-7b6c9.firebaseio.com/",
 		}
 
 		f, _ := firebase.NewApp(context.Background(), config, opt)
