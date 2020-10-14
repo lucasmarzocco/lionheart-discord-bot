@@ -287,15 +287,12 @@ func prettyPrintPods(pods map[string][]fb.Pod) string {
 }
 
 func messageReactDelete(s *discordgo.Session, m *discordgo.MessageReactionRemove) {
-	s.MessageReactionAdd(m.ChannelID, m.MessageID, m.Emoji.Name)
+
+	//TODO
+
 }
 
 func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
-
-	if m.UserID == s.State.User.ID {
-		return
-	}
-	
 	fmt.Println("There was a message react.")
 
 	if val, ok := Emojis[m.Emoji.Name]; ok {
