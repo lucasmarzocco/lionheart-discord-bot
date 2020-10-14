@@ -293,7 +293,7 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
 			roleFlag := false
 			for _, role := range member.Roles {
-				if role == "Levelers" {
+				if strings.EqualFold(role, "Levelers") {
 					roleFlag = true
 				}
 			}
