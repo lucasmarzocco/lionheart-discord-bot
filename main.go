@@ -291,30 +291,42 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
-
-			if len(member.Roles) >= 3 {
-				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
-				user, _ := s.UserChannelCreate(m.UserID)
-				s.ChannelMessageSend(user.ID, "Currently users can only have 2 skills to level up at once. If you chose a skill on accident, please post in #questions. Thanks!")
-				return
-			}
-
-			phone := fb.GetUserPhoneNumber(m.UserID)
-			user := fb.GetUserByNumber(phone)
-			roles, _ := s.GuildRoles(m.GuildID)
-			roleName := ""
-
-			for _, role := range roles {
-				if role.ID == val.RoleID {
-					user.Roles = append(user.Roles, role.Name)
-					roleName = role.Name
-					break
+			flag := false
+			for _, role := range member.Roles {
+				if role == "Levelers" {
+					flag = true
 				}
 			}
 
-			fb.WriteUser(phone, user)
-			s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
-			s.ChannelMessageSend(BotRoom, "DEBUG: " + member.Nick + " added role: " + roleName + " on: " + time.Now().Format("2006-01-02-15:04:05"))
+			if flag {
+				if len(member.Roles) >= 3 {
+					s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
+					user, _ := s.UserChannelCreate(m.UserID)
+					s.ChannelMessageSend(user.ID, "Currently users can only have 2 skills to level up at once. If you chose a skill on accident, please post in #questions. Thanks!")
+					return
+				}
+
+				phone := fb.GetUserPhoneNumber(m.UserID)
+				user := fb.GetUserByNumber(phone)
+				roles, _ := s.GuildRoles(m.GuildID)
+				roleName := ""
+
+				for _, role := range roles {
+					if role.ID == val.RoleID {
+						user.Roles = append(user.Roles, role.Name)
+						roleName = role.Name
+						break
+					}
+				}
+
+				fb.WriteUser(phone, user)
+				s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
+				s.ChannelMessageSend(BotRoom, "DEBUG: "+member.Nick+" added role: "+roleName+" on: "+time.Now().Format("2006-01-02-15:04:05"))
+			}else {
+				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
+				user, _ := s.UserChannelCreate(m.UserID)
+				s.ChannelMessageSend(user.ID, "You have not verified. Please verify in order to select your skills!")
+			}
 		}
 	}
 }
@@ -407,7 +419,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					for _, role := range roles {
 						if role.Name == "Levelers" {
 							s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
-							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+ " has been verified. Levelers role granted.")
+							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+ " has been verified. Levelers role granted. Please go to #3-skill-selection to continue.")
 						}
 					}
 				}
