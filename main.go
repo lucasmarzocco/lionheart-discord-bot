@@ -291,14 +291,14 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
-			flag := false
+			roleFlag := false
 			for _, role := range member.Roles {
 				if role == "Levelers" {
-					flag = true
+					roleFlag = true
 				}
 			}
 
-			if flag {
+			if roleFlag {
 				if len(member.Roles) >= 3 {
 					s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
 					user, _ := s.UserChannelCreate(m.UserID)
@@ -322,6 +322,7 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 				fb.WriteUser(phone, user)
 				s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
 				s.ChannelMessageSend(BotRoom, "DEBUG: "+member.Nick+" added role: "+roleName+" on: "+time.Now().Format("2006-01-02-15:04:05"))
+
 			}else {
 				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
 				user, _ := s.UserChannelCreate(m.UserID)
