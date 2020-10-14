@@ -292,12 +292,12 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
 
-			/*if len(member.Roles) == 3 {
+			if len(member.Roles) >= 3 {
 				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
 				user, _ := s.UserChannelCreate(m.UserID)
 				s.ChannelMessageSend(user.ID, "Currently users can only have 2 skills to level up at once. If you chose a skill on accident, please post in #questions. Thanks!")
 				return
-			} */
+			}
 
 			phone := fb.GetUserPhoneNumber(m.UserID)
 			user := fb.GetUserByNumber(phone)
