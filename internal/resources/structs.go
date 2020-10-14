@@ -18,7 +18,7 @@ type Personal struct {
 type Discord struct {
 	ID       string
 	Username string
-	Nick     string
+	Nickname     string
 }
 
 type User struct {
@@ -61,5 +61,5 @@ type Pod struct {
 }
 
 func (p PodMember) String() string {
-	return p.DiscordInfo.Nick
+	return p.DiscordInfo.Nickname
 }

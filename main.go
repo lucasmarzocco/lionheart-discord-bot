@@ -221,7 +221,7 @@ func matchUsers() {
 								DiscordInfo: fb.Discord{
 									user.Discord.ID,
 									user.Discord.Username,
-									user.Discord.Nick,
+									user.Discord.Nickname,
 								},
 								PhoneNumber: phone,
 							}},
@@ -235,7 +235,7 @@ func matchUsers() {
 						DiscordInfo: fb.Discord{
 							user.Discord.ID,
 							user.Discord.Username,
-							user.Discord.Nick,
+							user.Discord.Nickname,
 						},
 						PhoneNumber: phone,
 					})
@@ -253,7 +253,7 @@ func matchUsers() {
 								DiscordInfo: fb.Discord{
 									user.Discord.ID,
 									user.Discord.Username,
-									user.Discord.Nick,
+									user.Discord.Nickname,
 								},
 								PhoneNumber: phone,
 							}},

@@ -25,7 +25,7 @@ func init() {
 	}
 }
 
-func UserExists(phone string, discordID string, discordName string, nick string) (bool, string) {
+func UserExists(phone string, discordID string, discordName string, nickname string) (bool, string) {
 	var User User
 	ref := fb.NewRef("users").Child(phone)
 	err := ref.Get(context.Background(), &User)
@@ -40,7 +40,7 @@ func UserExists(phone string, discordID string, discordName string, nick string)
 			ref.Child("Verified").Set(context.Background(), true)
 			ref.Child("Discord/ID").Set(context.Background(), discordID)
 			ref.Child("Discord/Username").Set(context.Background(), discordName)
-			ref.Child("Discord/Nick").Set(context.Background(), nick)
+			ref.Child("Discord/Nickname").Set(context.Background(), nickname)
 			fb.NewRef("lookup").Child(discordID).Set(context.Background(), phone)
 			return true, ""
 		}
