@@ -53,6 +53,7 @@ func main() {
 	dg.AddHandler(messageCreate)
 	dg.AddHandler(discordJoin)
 	dg.AddHandler(messageReactAdd)
+	dg.AddHandler(messageReactDelete)
 
 	// In this example, we only care about receiving message events.
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
@@ -283,6 +284,10 @@ func prettyPrintPods(pods map[string][]fb.Pod) string {
 		}
 	}
 	return str
+}
+
+func messageReactDelete(s *discordgo.Session, m *discordgo.MessageReactionRemove) {
+	s.MessageReactionAdd(m.ChannelID, m.MessageID, m.Emoji.Name)
 }
 
 func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
