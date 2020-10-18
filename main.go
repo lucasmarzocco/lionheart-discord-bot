@@ -377,6 +377,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Channel ID is: " + m.ChannelID)
 	}
 
+	if m.Content == ".create" {
+
+		role, _ := s.GuildRoleCreate(m.GuildID)
+		role.Name = "TEST-123"
+
+		createDiscordRoom(m.GuildID, "TEST-HERE", role.ID)
+
+
+	}
+
 	if m.Content == ".db" {
 		fb.GetUsers()
 		val := fb.GetNumUsers()
@@ -472,4 +482,13 @@ func fixPhoneNumber(number string) string {
 
 func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
 	fb.WriteLeaderboards(m.Author.ID)
+}
+
+func createDiscordRoom(guildID string, roomName string, roleID string) {
+	fmt.Println("creating room......")
+
+	channel, _ := Session.GuildChannelCreate(guildID, roomName, discordgo.ChannelTypeGuildText)
+	fmt.Println(Session.ChannelPermissionSet(channel.ID, roleID, "VIEW_CHANNEL", 1, 0))
+
+	fmt.Println("done creating room.....")
 }
