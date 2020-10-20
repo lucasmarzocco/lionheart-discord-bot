@@ -17,11 +17,13 @@ import (
 
 // Variables used for command line parameters
 var (
-	Token string
-	Emojis map[string]fb.Emoji
+	Token   string
+	Emojis  map[string]fb.Emoji
 	BotRoom string
-	Pods string
+	Pods    string
+	Errors string
 	Session *discordgo.Session
+	Roles   map[string]string
 )
 
 func init() {
@@ -31,6 +33,40 @@ func init() {
 	Emojis = fb.LoadData()
 	BotRoom = "765438490007175179"
 	Pods = "765514925531070502"
+	Errors = "768057592115101746"
+
+	Roles = map[string]string{
+		"Adventurousness":      "Perception",
+		"Artistic Interest":    "Perception",
+		"Emotionality":         "Perception",
+		"Imagination":          "Perception",
+		"Intellect":            "Perception",
+		"Liberalism":           "Perception",
+		"Cautiousness":         "Productivity",
+		"Dutifulness":          "Productivity",
+		"Achievement Striving": "Productivity",
+		"Orderliness":          "Productivity",
+		"Self-Discipline":      "Productivity",
+		"Self-Efficacy":        "Productivity",
+		"Activity":             "Fulfillment",
+		"Assertiveness":        "Fulfillment",
+		"Cheerfulness":         "Fulfillment",
+		"Excitement Seeking":   "Fulfillment",
+		"Friendliness":         "Fulfillment",
+		"Gregariousness":       "Fulfillment",
+		"Altruism":             "Collaboration",
+		"Cooperation":          "Collaboration",
+		"Modesty":              "Collaboration",
+		"Morality":             "Collaboration",
+		"Sympathy":             "Collaboration",
+		"Trust":                "Collaboration",
+		"Peacefulness":         "Reslience",
+		"Calmness":             "Reslience",
+		"Lionheartedness":      "Reslience",
+		"Moderation":           "Reslience",
+		"Self-Confidence":      "Reslience",
+		"Invulnerability":      "Reslience",
+	}
 }
 
 func main() {
@@ -53,7 +89,6 @@ func main() {
 	dg.AddHandler(messageCreate)
 	dg.AddHandler(discordJoin)
 	dg.AddHandler(messageReactAdd)
-	dg.AddHandler(messageReactDelete)
 
 	// In this example, we only care about receiving message events.
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
@@ -82,138 +117,31 @@ func startMatching() {
 	c := cron.New()
 
 	//should be 4am everyday, make that project level, ENV variables
-	c.AddFunc("45 11 * * *", matchUsers)
+	c.AddFunc("0 11 * * *", matchUsers)
 
 	// Start cron with one scheduled job
 	fmt.Println("Start cron")
 	c.Start()
 }
 
-func TestPods() map[string][]fb.Pod {
-
-	pods := make(map[string][]fb.Pod)
-
-	pods["Adventurousness"] = []fb.Pod {
-		{
-			Limit: 5,
-			Size: 5,
-			Members: []fb.PodMember{
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Sally",
-						"Sally",
-					},
-					PhoneNumber: "2393284294",
-				},
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Bob",
-						"Bob",
-					},
-					PhoneNumber: "2393284294",
-				},
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Jake",
-						"Jake",
-					},
-					PhoneNumber: "2393284294",
-				},
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Martin",
-						"Martin",
-					},
-					PhoneNumber: "2393284294",
-				},
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Juan",
-						"Juan",
-					},
-					PhoneNumber: "2393284294",
-				},
-
-
-			},
-			Skill: "Adventurousness",
-			RoomName: "Adventurousness_1",
-		},
-	}
-
-	pods["Liberalism"] = []fb.Pod {
-		{
-			Limit: 5,
-			Size: 4,
-			Members: []fb.PodMember{
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Sally",
-						"Sally",
-					},
-					PhoneNumber: "2393284294",
-				},
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Jason",
-						"Jason",
-					},
-					PhoneNumber: "2393284294",
-				},
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Duke",
-						"Duke",
-					},
-					PhoneNumber: "2393284294",
-				},
-				{
-					DiscordInfo: fb.Discord{
-						"132332",
-						"Bob",
-						"Bob",
-					},
-					PhoneNumber: "2393284294",
-				},
-			},
-			Skill: "Liberalism",
-			RoomName: "Liberalism_1",
-		},
-	}
-
-
-	return pods
-}
-
 func matchUsers() {
-	fmt.Println("MATCHING USERS NOW====================")
-	Session.ChannelMessageSend(Pods, "Group matching begun, stay tuned...")
+	Session.ChannelMessageSend(Pods, "Group matching initiated.")
 
+	guildID := "666130712734466051"
 	pods := make(map[string][]fb.Pod)
 	users := fb.GetUsers()
 
 	for phone, user := range users {
-		fmt.Println(user)
 		if !user.Verified {
 			continue
 		}
 
 		for _, skill := range user.Roles {
-			fmt.Println("CHECKING SKILL: " + skill)
+			bigFive := Roles[skill]
 
-			if val, ok := pods[skill]; ok {
-
+			if val, ok := pods[bigFive]; ok {
 				pod := val[len(val)-1]
 				if pod.Size == pod.Limit {
-
 					newPod := fb.Pod{
 						Limit: 5,
 						Size:  1,
@@ -226,10 +154,10 @@ func matchUsers() {
 								},
 								PhoneNumber: phone,
 							}},
-						Skill:    skill,
-						RoomName: skill + "_" + string(len(val)),
+						Skill:    bigFive,
+						RoomName: bigFive + "_" + string(len(val)),
 					}
-					pods[skill] = append(pods[skill], newPod)
+					pods[bigFive] = append(pods[bigFive], newPod)
 
 				} else {
 					pod.Members = append(pod.Members, fb.PodMember{
@@ -242,13 +170,13 @@ func matchUsers() {
 					})
 
 					pod.Size += 1
-					pods[skill][len(pods[skill])-1] = pod
+					pods[bigFive][len(pods[bigFive])-1] = pod
 				}
 			} else {
-				pods[skill] = []fb.Pod {
+				pods[bigFive] = []fb.Pod{
 					{
 						Limit: 5,
-						Size: 1,
+						Size:  1,
 						Members: []fb.PodMember{
 							{
 								DiscordInfo: fb.Discord{
@@ -258,17 +186,33 @@ func matchUsers() {
 								},
 								PhoneNumber: phone,
 							}},
-						Skill: skill,
-						RoomName: skill + "_1",
+						Skill:    bigFive,
+						RoomName: bigFive + "_1",
 					},
 				}
 			}
 		}
 	}
 
-	Session.ChannelMessageSend(Pods, "Group matching over, this is what I found...")
 	Session.ChannelMessageSend(Pods, prettyPrintPods(pods))
 	fb.WritePods(pods)
+	putInRoomsAndSetRoles(pods, guildID)
+	Session.ChannelMessageSend(Pods, "Group matching complete")
+}
+
+func putInRoomsAndSetRoles(pods map[string][]fb.Pod, guildID string) {
+	for _, pod := range pods {
+		for _, ele := range pod {
+			role, _ := Session.GuildRoleCreate(guildID)
+			Session.GuildRoleEdit(guildID, role.ID, ele.RoomName, 0, false, 0, false)
+			createDiscordRoom(guildID, ele.RoomName, role.ID)
+
+			for _, member := range ele.Members {
+				m, _ := Session.GuildMember(guildID, member.DiscordInfo.ID)
+				Session.GuildMemberEdit(guildID, member.DiscordInfo.ID, append(m.Roles, role.ID))
+			}
+		}
+	}
 }
 
 func prettyPrintPods(pods map[string][]fb.Pod) string {
@@ -277,24 +221,16 @@ func prettyPrintPods(pods map[string][]fb.Pod) string {
 	for skill, pod := range pods {
 		for i, p := range pod {
 			str +=
-				"Skill: " + skill + "- Pod: " + strconv.Itoa(i + 1) + "\n" +
-				"# Members in this pod: " + strconv.Itoa(p.Size) + "\n" +
-				"Who? " + fmt.Sprint(p.Members) + "\n" +
-				"------------" + "\n"
+				"Skill: " + skill + "- Pod: " + strconv.Itoa(i+1) + "\n" +
+					"# Members in this pod: " + strconv.Itoa(p.Size) + "\n" +
+					"Who? " + fmt.Sprint(p.Members) + "\n" +
+					"------------" + "\n"
 		}
 	}
 	return str
 }
 
-func messageReactDelete(s *discordgo.Session, m *discordgo.MessageReactionRemove) {
-
-	//TODO
-
-}
-
 func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
-	fmt.Println("There was a message react.")
-
 	if val, ok := Emojis[m.Emoji.Name]; ok {
 		if val.MessageID == m.MessageID {
 			member, _ := s.GuildMember(m.GuildID, m.UserID)
@@ -320,17 +256,21 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 
 				for _, role := range roles {
 					if role.ID == val.RoleID {
-						user.Roles = append(user.Roles, role.Name)
-						roleName = role.Name
-						break
+						if !isRoleThere(role.Name, user.Roles) {
+							user.Roles = append(user.Roles, role.Name)
+							roleName = role.Name
+							break
+						} else {
+							return
+						}
 					}
 				}
 
 				fb.WriteUser(phone, user)
 				s.GuildMemberEdit(m.GuildID, m.UserID, append(member.Roles, val.RoleID))
-				s.ChannelMessageSend(BotRoom, "DEBUG: "+member.Nick+" added role: "+roleName+" on: "+time.Now().Format("2006-01-02-15:04:05"))
+				s.ChannelMessageSend(BotRoom, member.User.Username + "#" + member.User.Discriminator + " added role: "+roleName+" on: "+time.Now().Format("2006-01-02-15:04:05"))
 
-			}else {
+			} else {
 				s.MessageReactionRemove(m.ChannelID, m.MessageID, m.Emoji.Name, m.UserID)
 				user, _ := s.UserChannelCreate(m.UserID)
 				s.ChannelMessageSend(user.ID, "You have not verified. Please verify in order to select your skills!")
@@ -342,24 +282,21 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	user, _ := s.UserChannelCreate(m.User.ID)
 
-	s.ChannelMessageSend(user.ID, "Welcome to Lionheart! \n\n " +
+	s.ChannelMessageSend(user.ID, "Welcome to Lionheart! \n\n "+
 
-		"#rules - Explains our rules and code of conduct while in Lionheart. \n " +
-		"#questions - Got questions? Ask here! \n\n " +
+		"#rules - Explains our rules and code of conduct while in Lionheart. \n "+
+		"#questions - Got questions? Ask here! \n\n "+
 
-		"#1-start-here - An overview of Lionheart \n " +
-		"#2-verify - Verify your phone number after you've taken the skills assessment. No bots please. \n " +
-		"#3-skill-selection - After you've verified your phone number, select the skill to level and get grouped with a pod. \n\n " +
+		"#1-start-here - An overview of Lionheart \n "+
+		"#2-verify - Verify your phone number after you've taken the skills assessment. No bots please. \n "+
+		"#3-skill-selection - After you've verified your phone number, select the skill to level and get grouped with a pod. \n\n "+
 
-		"Link to skills assessment: https://join.lionheart-institution.app/latent-potential \n " +
-		"If you need personalized assistance, schedule a time to chat with Juan: \n " +
-		"https://calendly.com/juan-lionheart/welcome-to-lionheart \n\n" +
+		"Link to skills assessment: https://join.lionheart-institution.app/latent-potential \n "+
+		"If you need personalized assistance, schedule a time to chat with Juan: \n "+
+		"https://calendly.com/juan-lionheart/welcome-to-lionheart \n\n"+
 
 		"Thanks for joining. Reach out to any of the Admins or Mods if you need any assistance during your journey.")
 }
-
-
-
 
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
@@ -369,29 +306,61 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if m.Content == ".test" {
+		roles, _ := s.GuildRoles(m.GuildID)
+		for _, role := range roles {
+			if val, ok := Roles[role.Name]; ok {
+				s.ChannelMessageSend(m.ChannelID, "Role: " + role.Name + "found: " + val)
+			}
+		}
+	}
+
 	if m.Content == ".alive" {
 		s.ChannelMessageSend(m.ChannelID, "Hello, yes, I'm alive, good sir.")
 	}
 
+	if m.Content == ".clean" {
+		s.ChannelMessageDelete(m.ChannelID, m.ID)
+
+		rooms, _ := s.GuildChannels(m.GuildID)
+		roles, _ := s.GuildRoles(m.GuildID)
+
+		for _, room := range rooms {
+			if strings.Contains(room.Name, "_") {
+				s.ChannelDelete(room.ID)
+			}
+		}
+
+		for _, role := range roles {
+			if strings.Contains(role.Name, "_") {
+				s.GuildRoleDelete(m.GuildID, role.ID)
+			}
+		}
+
+		fb.DeleteChild("pods")
+	}
+
 	if m.Content == ".id" {
-		s.ChannelMessageSend(m.ChannelID, "Channel ID is: " + m.ChannelID)
+		s.ChannelMessageSend(m.ChannelID, "Channel ID is: "+m.ChannelID)
 	}
 
 	if m.Content == ".create" {
-
 		role, _ := s.GuildRoleCreate(m.GuildID)
-		role.Name = "TEST-123"
 
+		s.GuildRoleEdit(m.GuildID, role.ID, "Test-123", 0, false, 0, false)
 		createDiscordRoom(m.GuildID, "TEST-HERE", role.ID)
+	}
 
-
+	if m.Content == ".match" {
+		s.ChannelMessageDelete(m.ChannelID, m.ID)
+		matchUsers()
 	}
 
 	if m.Content == ".db" {
 		fb.GetUsers()
 		val := fb.GetNumUsers()
 		num := strconv.Itoa(val)
-		s.ChannelMessageSend(m.ChannelID, "There are currently " + num + " users who have taken the test.")
+		s.ChannelMessageSend(m.ChannelID, "There are currently "+num+" users who have taken the test.")
 	}
 
 	if strings.Contains(m.Content, ".clear") {
@@ -413,7 +382,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		for _, channel := range c {
 			if channel.Name == "mod-feedback" {
 				s.ChannelMessageDelete(m.ChannelID, m.ID)
-				s.ChannelMessageSend(channel.ID, "User ID: " + m.Author.ID + " (" + m.Author.String() + ") has submitted feedback: \n" + m.Content)
+				s.ChannelMessageSend(channel.ID, "User ID: "+m.Author.ID+" ("+m.Author.String()+") has submitted feedback: \n"+m.Content)
 				return
 			}
 		}
@@ -430,14 +399,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			if len(values) > 1 {
 				mem, _ := s.GuildMember(m.GuildID, m.Author.ID)
-				user, message := fb.UserExists("1" + fixPhoneNumber(values[1]), m.Author.ID, m.Author.Username, mem.Nick)
+				user, message := fb.UserExists("1"+fixPhoneNumber(values[1]), m.Author.ID, m.Author.Username, mem.Nick)
 
 				if user {
 					roles, _ := s.GuildRoles(m.GuildID)
 					for _, role := range roles {
 						if role.Name == "Levelers" {
 							s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
-							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+ " has been verified. Levelers role granted. Please go to #3-skill-selection to continue.")
+							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+" has been verified. Levelers role granted. Please go to #3-skill-selection to continue.")
 						}
 					}
 				}
@@ -458,7 +427,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, r := range roles {
 			fmt.Println(r)
-			if strings.EqualFold(role, r.Name){
+			if strings.EqualFold(role, r.Name) {
 				e.RoleID = r.ID
 			}
 		}
@@ -480,15 +449,68 @@ func fixPhoneNumber(number string) string {
 	return reg.ReplaceAllString(number, "")
 }
 
-func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
-	fb.WriteLeaderboards(m.Author.ID)
-}
 
 func createDiscordRoom(guildID string, roomName string, roleID string) {
-	fmt.Println("creating room......")
+	var everyoneID string
+	var adminID string
 
-	channel, _ := Session.GuildChannelCreate(guildID, roomName, discordgo.ChannelTypeGuildText)
-	fmt.Println(Session.ChannelPermissionSet(channel.ID, roleID, "VIEW_CHANNEL", 1, 0))
+	roles, _ := Session.GuildRoles(guildID)
+	for _, role := range roles {
+		if role.Name == "@everyone" {
+			everyoneID = role.ID
+		}
+		if role.Name == "Admin" {
+			adminID = role.ID
+		}
+	}
 
-	fmt.Println("done creating room.....")
+	data := discordgo.GuildChannelCreateData{
+		Name: roomName,
+		Type: discordgo.ChannelTypeGuildText,
+		PermissionOverwrites: []*discordgo.PermissionOverwrite{
+			{
+				ID:    adminID,
+				Type:  "role",
+				Allow: 8,
+			},
+			{
+				ID:    roleID,
+				Type:  "role",
+				Allow: 523328,
+			},
+			{
+				ID:   everyoneID,
+				Type: "role",
+				Deny: 523328,
+			},
+		},
+		ParentID: "767315418687078411",
+	}
+
+	_, err := Session.GuildChannelCreateComplex(guildID, data)
+	if err != nil {
+		Session.ChannelMessageSend(Errors, "Failed to create channel with room name: " + roomName)
+		fmt.Println(err)
+	}
+}
+
+func isRoleThere(role string, roles []string) bool {
+	for _, r := range roles {
+		if r == role {
+			return true
+		}
+	}
+
+	return false
+}
+
+
+
+/*
+
+FEATURES TO BE ADDED EVENTUALLY
+
+ */
+func updateLeaderboards(s *discordgo.Session, m *discordgo.MessageCreate) {
+	fb.WriteLeaderboards(m.Author.ID)
 }

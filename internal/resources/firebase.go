@@ -4,9 +4,9 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/db"
 	"fmt"
+	"os"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
-	"os"
 )
 
 var fb *db.Client
@@ -17,7 +17,7 @@ func init() {
 		opt := option.WithCredentialsJSON([]byte(os.Getenv("ACCOUNT")))
 		config := &firebase.Config{
 			DatabaseURL: os.Getenv("DB_URL"),
-			//DatabaseURL: "https://lionheart-7b6c9.firebaseio.com/",
+				//DatabaseURL: "https://lionheart-7b6c9.firebaseio.com/",
 		}
 
 		f, _ := firebase.NewApp(context.Background(), config, opt)
@@ -131,4 +131,8 @@ func GetUserPhoneNumber(ID string) string {
 
 func WritePods(pods map[string][]Pod) {
 	fb.NewRef("pods").Set(context.Background(), pods)
+}
+
+func DeleteChild(child string) {
+	fb.NewRef(child).Delete(context.Background())
 }
