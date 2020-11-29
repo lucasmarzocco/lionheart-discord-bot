@@ -93,7 +93,7 @@ func main() {
 	// In this example, we only care about receiving message events.
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
-	startMatching()
+	//startMatching()
 
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
@@ -296,6 +296,15 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 		"https://calendly.com/juan-lionheart/welcome-to-lionheart \n\n"+
 
 		"Thanks for joining. Reach out to any of the Admins or Mods if you need any assistance during your journey.")
+
+
+	roles, _ := s.GuildRoles(m.GuildID)
+	for _, role := range roles {
+		if role.Name == "Guests" {
+			fmt.Println("Adding guest role to new user")
+			s.GuildMemberRoleAdd(m.GuildID, m.User.ID, role.ID)
+		}
+	}
 }
 
 // This function will be called (due to AddHandler above) every time a new
