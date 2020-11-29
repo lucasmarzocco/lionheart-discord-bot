@@ -413,6 +413,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				if user {
 					roles, _ := s.GuildRoles(m.GuildID)
 					for _, role := range roles {
+
+						if role.Name == "Guests" {
+							s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, role.ID)
+						}
 						if role.Name == "Levelers" {
 							s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
 							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+" has been verified. Levelers role granted. Please go to #3-skill-selection to continue.")
