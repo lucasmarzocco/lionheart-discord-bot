@@ -397,11 +397,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	if channel.Name == "3-skill-selection-🙋" {
+	if channel.Name == "4-skill-selection" {
 		fmt.Println("That ^ message ID is: " + m.Message.ID)
 	}
 
-	if channel.Name == "bot-room" {
+	if channel.Name == "3-bot-room" {
 		if strings.Contains(m.Content, ".verify") {
 			s.ChannelMessageDelete(m.ChannelID, m.ID)
 			values := strings.Split(m.Content, " ")
