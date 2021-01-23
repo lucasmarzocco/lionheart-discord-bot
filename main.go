@@ -95,6 +95,8 @@ func main() {
 
 	//startMatching()
 
+	randomQuotes()
+
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
 	if err != nil {
@@ -110,6 +112,27 @@ func main() {
 
 	// Cleanly close down the Discord session.
 	dg.Close()
+}
+
+func randomQuotes() {
+
+	fmt.Println("Create new cron")
+	c := cron.New()
+
+	//should be 4am everyday, make that project level, ENV variables
+	c.AddFunc("50 23 * * *", quotes)
+
+	// Start cron with one scheduled job
+	fmt.Println("Start cron")
+	c.Start()
+}
+
+func quotes() {
+
+	//guildID := "666130712734466051"
+	channelID := "750806999280910548"
+
+	Session.ChannelMessageSend(channelID, "This message was brought to you by Geico, randomly selected at some random time!")
 }
 
 func startMatching() {
