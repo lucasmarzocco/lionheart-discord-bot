@@ -120,7 +120,7 @@ func randomQuotes() {
 	c := cron.New()
 
 	//should be 4am everyday, make that project level, ENV variables
-	c.AddFunc("50 23 * * *", quotes)
+	c.AddFunc("* 8 * * *", quotes)
 
 	// Start cron with one scheduled job
 	fmt.Println("Start cron")
@@ -128,11 +128,8 @@ func randomQuotes() {
 }
 
 func quotes() {
-
-	//guildID := "666130712734466051"
 	channelID := "750806999280910548"
-
-	Session.ChannelMessageSend(channelID, "This message was brought to you by Geico, randomly selected at some random time!")
+	Session.ChannelMessageSend(channelID, GetQuote())
 }
 
 func startMatching() {
