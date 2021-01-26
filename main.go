@@ -119,8 +119,7 @@ func randomQuotes() {
 	fmt.Println("Create new cron")
 	c := cron.New()
 
-	//should be 4am everyday, make that project level, ENV variables
-	c.AddFunc("* 8 * * *", quotes)
+	c.AddFunc("0 14 * * *", quotes)
 
 	// Start cron with one scheduled job
 	fmt.Println("Start cron")
@@ -128,7 +127,7 @@ func randomQuotes() {
 }
 
 func quotes() {
-	channelID := "750806999280910548"
+	channelID := "803545216464322570"
 	Session.ChannelMessageSend(channelID, GetQuote())
 }
 
