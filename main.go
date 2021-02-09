@@ -99,8 +99,6 @@ func main() {
 
 	randomQuotes()
 
-	happyBirthday()
-
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
 	if err != nil {
@@ -136,47 +134,26 @@ func quotes() {
 }
 
 func text() {
+	accountSid := os.Getenv("ACCOUNT_SID")
+	token := os.Getenv("TOKEN")
+	urlStr := "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"
 
-	now := time.Now()
-	newLayout := "15:04"
-	ns, _ := time.Parse(newLayout, strconv.Itoa(now.Hour())+":"+strconv.Itoa(now.Minute()))
-	srt, _ := time.Parse(newLayout, "09:20")
+	msgData := url.Values{}
+	msgData.Set("To", "9254467645")
+	msgData.Set("From", os.Getenv("PHONE"))
+	msgData.Set("Body", "HEHE UR CUTE!")
+	msgDataReader := *strings.NewReader(msgData.Encode())
 
-	if ns.After(srt) {
-		accountSid := os.Getenv("ACCOUNT_SID")
-		token := os.Getenv("TOKEN")
-		urlStr := "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"
-
-		msgData := url.Values{}
-		msgData.Set("To", "9254467645")
-		msgData.Set("From", os.Getenv("PHONE"))
-		msgData.Set("Body", "HEHE UR CUTE!")
-		msgDataReader := *strings.NewReader(msgData.Encode())
-
-		client := &http.Client{}
-		req, err := http.NewRequest("POST", urlStr, &msgDataReader)
-		if err != nil {
-			panic(err)
-		}
-
-		req.SetBasicAuth(accountSid, token)
-		req.Header.Add("Accept", "application/json")
-		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-		client.Do(req)
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", urlStr, &msgDataReader)
+	if err != nil {
+		panic(err)
 	}
 
-
-}
-
-func happyBirthday() {
-	fmt.Println("Create new cron")
-	c := cron.New()
-
-	c.AddFunc("*/21 * * * *", text)
-
-	// Start cron with one scheduled job
-	fmt.Println("Start cron")
-	c.Start()
+	req.SetBasicAuth(accountSid, token)
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	client.Do(req)
 }
 
 func startMatching() {
