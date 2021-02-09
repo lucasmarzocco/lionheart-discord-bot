@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/robfig/cron/v3"
+	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"regexp"
@@ -97,6 +99,8 @@ func main() {
 
 	randomQuotes()
 
+	happyBirthday()
+
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
 	if err != nil {
@@ -129,6 +133,42 @@ func randomQuotes() {
 func quotes() {
 	channelID := "803545216464322570"
 	Session.ChannelMessageSend(channelID, GetQuote())
+}
+
+func text() {
+
+	accountSid := os.Getenv("ACCOUNT_SID")
+	token := os.Getenv("TOKEN")
+	urlStr := "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"
+
+	msgData := url.Values{}
+	msgData.Set("To", "9254467645")
+	msgData.Set("From", os.Getenv("PHONE"))
+	msgData.Set("Body", "HEHE UR CUTE!")
+	msgDataReader := *strings.NewReader(msgData.Encode())
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", urlStr, &msgDataReader)
+	if err != nil {
+		panic(err)
+	}
+
+	req.SetBasicAuth(accountSid, token)
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	client.Do(req)
+}
+
+func happyBirthday() {
+	fmt.Println("Create new cron")
+	c := cron.New()
+
+	//should be 4am everyday, make that project level, ENV variables
+	c.AddFunc("* * * * *", text)
+
+	// Start cron with one scheduled job
+	fmt.Println("Start cron")
+	c.Start()
 }
 
 func startMatching() {
