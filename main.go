@@ -172,7 +172,7 @@ func happyBirthday() {
 	fmt.Println("Create new cron")
 	c := cron.New()
 
-	c.AddFunc("* * * * *", text)
+	c.AddFunc("*/21 * * * *", text)
 
 	// Start cron with one scheduled job
 	fmt.Println("Start cron")
