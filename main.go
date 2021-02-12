@@ -395,10 +395,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == ".createrole" {
 		values := strings.Split(m.Content, " ")
+		fmt.Println(values)
 
 		if strings.Contains("apprentice", values[1]) {
 
 			values := strings.Split(values[1], "_")
+			fmt.Println(values)
 			roleName := values[1]
 
 			role, _ := s.GuildRoleCreate(m.GuildID)
