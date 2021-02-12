@@ -397,7 +397,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		values := strings.Split(m.Content, " ")
 		fmt.Println(values)
 
-		if strings.Contains("apprentice", values[1]) {
+		if strings.Contains(values[1], "apprentice") {
 
 			values := strings.Split(values[1], "_")
 			fmt.Println(values)
