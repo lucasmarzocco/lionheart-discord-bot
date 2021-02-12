@@ -393,7 +393,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fb.DeleteChild("pods")
 	}
 
-	if m.Content == ".createrole" {
+	if strings.Contains(m.Content, ".createrole") {
 		values := strings.Split(m.Content, " ")
 		fmt.Println(values)
 
