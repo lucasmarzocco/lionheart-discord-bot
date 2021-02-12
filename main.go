@@ -393,6 +393,20 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fb.DeleteChild("pods")
 	}
 
+	if m.Content == ".createrole" {
+		values := strings.Split(m.Content, " ")
+
+		if strings.Contains("apprentice", values[1]) {
+
+			values := strings.Split(values[1], "_")
+			roleName := values[1]
+
+			role, _ := s.GuildRoleCreate(m.GuildID)
+			s.GuildRoleEdit(m.GuildID, role.ID, roleName, 0, false, 0, false)
+			createDiscordRoom(m.GuildID, roleName, role.ID)
+		}
+	}
+
 	if m.Content == ".id" {
 		s.ChannelMessageSend(m.ChannelID, "Channel ID is: "+m.ChannelID)
 	}
