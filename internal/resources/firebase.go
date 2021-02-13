@@ -4,9 +4,9 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/db"
 	"fmt"
-	"os"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
+	"os"
 )
 
 var fb *db.Client

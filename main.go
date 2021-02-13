@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/robfig/cron/v3"
-	"net/http"
-	"net/url"
 	"os"
 	"os/signal"
 	"regexp"
@@ -26,6 +24,7 @@ var (
 	Errors string
 	Session *discordgo.Session
 	Roles   map[string]string
+	Quotes string
 )
 
 func init() {
@@ -36,6 +35,7 @@ func init() {
 	BotRoom = "765438490007175179"
 	Pods = "765514925531070502"
 	Errors = "768057592115101746"
+	Quotes = "803545216464322570"
 
 	Roles = map[string]string{
 		"Adventurousness":      "Perception",
@@ -95,8 +95,6 @@ func main() {
 	// In this example, we only care about receiving message events.
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
-	//startMatching()
-
 	randomQuotes()
 
 	// Open a websocket connection to Discord and begin listening.
@@ -123,155 +121,12 @@ func randomQuotes() {
 
 	c.AddFunc("0 14 * * *", quotes)
 
-	// Start cron with one scheduled job
 	fmt.Println("Start cron")
 	c.Start()
 }
 
 func quotes() {
-	channelID := "803545216464322570"
-	Session.ChannelMessageSend(channelID, GetQuote())
-}
-
-func text() {
-	accountSid := os.Getenv("ACCOUNT_SID")
-	token := os.Getenv("TOKEN")
-	urlStr := "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"
-
-	msgData := url.Values{}
-	msgData.Set("To", "9254467645")
-	msgData.Set("From", os.Getenv("PHONE"))
-	msgData.Set("Body", "HEHE UR CUTE!")
-	msgDataReader := *strings.NewReader(msgData.Encode())
-
-	client := &http.Client{}
-	req, err := http.NewRequest("POST", urlStr, &msgDataReader)
-	if err != nil {
-		panic(err)
-	}
-
-	req.SetBasicAuth(accountSid, token)
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	client.Do(req)
-}
-
-func startMatching() {
-	fmt.Println("Create new cron")
-	c := cron.New()
-
-	//should be 4am everyday, make that project level, ENV variables
-	c.AddFunc("0 11 * * *", matchUsers)
-
-	// Start cron with one scheduled job
-	fmt.Println("Start cron")
-	c.Start()
-}
-
-func matchUsers() {
-	Session.ChannelMessageSend(Pods, "Group matching initiated.")
-
-	guildID := "666130712734466051"
-	pods := make(map[string][]fb.Pod)
-	users := fb.GetUsers()
-
-	for phone, user := range users {
-		if !user.Verified {
-			continue
-		}
-
-		for _, skill := range user.Roles {
-			bigFive := Roles[skill]
-
-			if val, ok := pods[bigFive]; ok {
-				pod := val[len(val)-1]
-				if pod.Size == pod.Limit {
-					newPod := fb.Pod{
-						Limit: 5,
-						Size:  1,
-						Members: []fb.PodMember{
-							{
-								DiscordInfo: fb.Discord{
-									user.Discord.ID,
-									user.Discord.Username,
-									user.Discord.Nickname,
-								},
-								PhoneNumber: phone,
-							}},
-						Skill:    bigFive,
-						RoomName: bigFive + "_" + string(len(val)),
-					}
-					pods[bigFive] = append(pods[bigFive], newPod)
-
-				} else {
-					pod.Members = append(pod.Members, fb.PodMember{
-						DiscordInfo: fb.Discord{
-							user.Discord.ID,
-							user.Discord.Username,
-							user.Discord.Nickname,
-						},
-						PhoneNumber: phone,
-					})
-
-					pod.Size += 1
-					pods[bigFive][len(pods[bigFive])-1] = pod
-				}
-			} else {
-				pods[bigFive] = []fb.Pod{
-					{
-						Limit: 5,
-						Size:  1,
-						Members: []fb.PodMember{
-							{
-								DiscordInfo: fb.Discord{
-									user.Discord.ID,
-									user.Discord.Username,
-									user.Discord.Nickname,
-								},
-								PhoneNumber: phone,
-							}},
-						Skill:    bigFive,
-						RoomName: bigFive + "_1",
-					},
-				}
-			}
-		}
-	}
-
-	Session.ChannelMessageSend(Pods, prettyPrintPods(pods))
-	fb.WritePods(pods)
-	putInRoomsAndSetRoles(pods, guildID)
-	Session.ChannelMessageSend(Pods, "Group matching complete")
-}
-
-func putInRoomsAndSetRoles(pods map[string][]fb.Pod, guildID string) {
-	for _, pod := range pods {
-		for _, ele := range pod {
-			role, _ := Session.GuildRoleCreate(guildID)
-			Session.GuildRoleEdit(guildID, role.ID, ele.RoomName, 0, false, 0, false)
-			createDiscordRoom(guildID, ele.RoomName, role.ID)
-
-			for _, member := range ele.Members {
-				m, _ := Session.GuildMember(guildID, member.DiscordInfo.ID)
-				Session.GuildMemberEdit(guildID, member.DiscordInfo.ID, append(m.Roles, role.ID))
-			}
-		}
-	}
-}
-
-func prettyPrintPods(pods map[string][]fb.Pod) string {
-	str := ""
-
-	for skill, pod := range pods {
-		for i, p := range pod {
-			str +=
-				"Skill: " + skill + "- Pod: " + strconv.Itoa(i+1) + "\n" +
-					"# Members in this pod: " + strconv.Itoa(p.Size) + "\n" +
-					"Who? " + fmt.Sprint(p.Members) + "\n" +
-					"------------" + "\n"
-		}
-	}
-	return str
+	Session.ChannelMessageSend(Quotes, GetQuote())
 }
 
 func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
@@ -393,6 +248,29 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fb.DeleteChild("pods")
 	}
 
+	if m.Content == ".id" {
+		s.ChannelMessageSend(m.ChannelID, "Channel ID is: "+m.ChannelID)
+	}
+
+	if m.Content == ".db" {
+		fb.GetUsers()
+		val := fb.GetNumUsers()
+		num := strconv.Itoa(val)
+		s.ChannelMessageSend(m.ChannelID, "There are currently "+num+" users who have taken the test.")
+	}
+
+	if m.Content == ".help" {
+		s.ChannelMessageSend(m.ChannelID, `
+
+			.alive => See if the bot is indeed alive.
+            .id    => Check the channel ID
+            .db    => Check to see how many users are in the DB
+            .clear <message count> => Clear that many messages in the given channel
+             
+            .createrole apprentice_NameHere => Create an apprentice role and channel with NameHere`,
+        )
+	}
+
 	if strings.Contains(m.Content, ".createrole") {
 		values := strings.Split(m.Content, " ")
 		fmt.Println(values)
@@ -409,29 +287,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	if m.Content == ".id" {
-		s.ChannelMessageSend(m.ChannelID, "Channel ID is: "+m.ChannelID)
-	}
-
-	if m.Content == ".create" {
-		role, _ := s.GuildRoleCreate(m.GuildID)
-
-		s.GuildRoleEdit(m.GuildID, role.ID, "Test-123", 0, false, 0, false)
-		createDiscordRoom(m.GuildID, "TEST-HERE", role.ID)
-	}
-
-	if m.Content == ".match" {
-		s.ChannelMessageDelete(m.ChannelID, m.ID)
-		matchUsers()
-	}
-
-	if m.Content == ".db" {
-		fb.GetUsers()
-		val := fb.GetNumUsers()
-		num := strconv.Itoa(val)
-		s.ChannelMessageSend(m.ChannelID, "There are currently "+num+" users who have taken the test.")
-	}
-
 	if strings.Contains(m.Content, ".clear") {
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 
@@ -446,6 +301,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
+
+
 	if channel.Name == "anon-feedback" {
 		c, _ := s.GuildChannels(m.GuildID)
 		for _, channel := range c {
@@ -455,10 +312,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 		}
-	}
-
-	if channel.Name == "4-skill-selection" {
-		fmt.Println("That ^ message ID is: " + m.Message.ID)
 	}
 
 	if channel.Name == "3-bot-room" {
@@ -477,9 +330,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 						if role.Name == "Guests" {
 							s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, role.ID)
 						}
-						if role.Name == "Levelers" {
+						if role.Name == "Apprentices" {
 							s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
-							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+" has been verified. Levelers role granted. Please go to #3-skill-selection to continue.")
+							s.ChannelMessageSend(m.ChannelID, m.Author.Mention()+" has been verified. Apprentices role granted. Please go to #3-skill-selection to continue.")
 						}
 					}
 				}
@@ -489,27 +342,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	if strings.Contains(m.Content, ".addrole") {
-		values := strings.Split(m.Content, "|")
-		message := values[1]
-		emoji := values[2]
-		role := values[3]
-		e := fb.Emoji{}
-		e.MessageID = message
-
-		roles, _ := s.GuildRoles(m.GuildID)
-		for _, r := range roles {
-			fmt.Println(r)
-			if strings.EqualFold(role, r.Name) {
-				e.RoleID = r.ID
-			}
-		}
-
-		Emojis[emoji] = e
-	}
-
-	if m.Content == ".done" {
-		fb.WriteData("emojis", Emojis)
+	if channel.Name == "4-skill-selection" {
+		fmt.Println("That ^ message ID is: " + m.Message.ID)
 	}
 }
 
