@@ -25,6 +25,7 @@ var (
 	Session *discordgo.Session
 	Roles   map[string]string
 	Quotes string
+	Commands map[string]string
 )
 
 func init() {
@@ -68,6 +69,14 @@ func init() {
 		"Moderation":           "Reslience",
 		"Self-Confidence":      "Reslience",
 		"Invulnerability":      "Reslience",
+	}
+
+	Commands = map[string]string {
+		".alive" : "Check to see if the bot is functional",
+		".id"    : "Check the ID of the current channel",
+		".db"    :  "See details about the database",
+		".clear <#>" : "Clear # of messages in the channel",
+		".createrole apprentice_NameHere" : "Create a role and channel named NameHere",
 	}
 }
 
@@ -260,15 +269,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".help" {
-		s.ChannelMessageSend(m.ChannelID, `
-
-			.alive => See if the bot is indeed alive.
-            .id    => Check the channel ID
-            .db    => Check to see how many users are in the DB
-            .clear <message count> => Clear that many messages in the given channel
-             
-            .createrole apprentice_NameHere => Create an apprentice role and channel with NameHere`,
-        )
+		help := ""
+		for _, ele := range Commands {
+			help += ele + " => " + Commands[ele] + "\n"
+		}
+		s.ChannelMessageSend(m.ChannelID, help)
 	}
 
 	if strings.Contains(m.Content, ".createrole") {
@@ -300,8 +305,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		}
 	}
-
-
 
 	if channel.Name == "anon-feedback" {
 		c, _ := s.GuildChannels(m.GuildID)
