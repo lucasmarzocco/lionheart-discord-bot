@@ -270,8 +270,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == ".help" {
 		help := ""
-		for _, ele := range Commands {
-			help += ele + " => " + Commands[ele] + "\n"
+		for key, val := range Commands {
+			help += key + " => " + val + "\n"
 		}
 		s.ChannelMessageSend(m.ChannelID, help)
 	}
