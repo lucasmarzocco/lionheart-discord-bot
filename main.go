@@ -260,6 +260,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if strings.Contains(m.Content, ".embed") {
+		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		messageEmbed := &discordgo.MessageEmbed{}
 		values := strings.Split(m.Content, "-")
 
