@@ -32,7 +32,7 @@ func init() {
 	flag.StringVar(&Token, "t", os.Getenv("DISCORD_TOKEN"), "Bot Token")
 	flag.Parse()
 
-	Emojis = fb.LoadData()
+	//Emojis = fb.LoadData()
 	BotRoom = "765438490007175179"
 	Pods = "765514925531070502"
 	Errors = "768057592115101746"
@@ -98,8 +98,8 @@ func main() {
 
 	// Register the messageCreate func as a callback for MessageCreate events.
 	dg.AddHandler(messageCreate)
-	dg.AddHandler(discordJoin)
-	dg.AddHandler(messageReactAdd)
+	//dg.AddHandler(discordJoin)
+	//dg.AddHandler(messageReactAdd)
 
 	// In this example, we only care about receiving message events.
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
@@ -223,6 +223,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	s.ChannelMessageDelete(m.ChannelID, m.ID)
+
 	if m.Content == ".test" {
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, role := range roles {
@@ -237,8 +239,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".clean" {
-		s.ChannelMessageDelete(m.ChannelID, m.ID)
-
 		rooms, _ := s.GuildChannels(m.GuildID)
 		roles, _ := s.GuildRoles(m.GuildID)
 
@@ -268,13 +268,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "There are currently "+num+" users who have taken the test.")
 	}
 
-	if m.Content == ".help" {
+	/*if m.Content == ".help" {
 		help := ""
 		for key, val := range Commands {
 			help += key + " => " + val + "\n"
 		}
 		s.ChannelMessageSend(m.ChannelID, help)
-	}
+	} */
 
 	if strings.Contains(m.Content, ".createrole") {
 		values := strings.Split(m.Content, " ")
@@ -293,8 +293,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if strings.Contains(m.Content, ".clear") {
-		s.ChannelMessageDelete(m.ChannelID, m.ID)
-
 		values := strings.Split(m.Content, " ")
 
 		if len(values) > 1 {
@@ -319,7 +317,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if channel.Name == "3-bot-room" {
 		if strings.Contains(m.Content, ".verify") {
-			s.ChannelMessageDelete(m.ChannelID, m.ID)
 			values := strings.Split(m.Content, " ")
 
 			if len(values) > 1 {
