@@ -223,8 +223,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	s.ChannelMessageDelete(m.ChannelID, m.ID)
-
 	if m.Content == ".test" {
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, role := range roles {
@@ -259,6 +257,30 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == ".id" {
 		s.ChannelMessageSend(m.ChannelID, "Channel ID is: "+m.ChannelID)
+	}
+
+	if strings.Contains(m.Content, ".embed") {
+		messageEmbed := &discordgo.MessageEmbed{}
+		values := strings.Split(m.Content, "-")
+
+		messageEmbed.Title = values[1]
+		messageEmbed.URL = values[2]
+
+		messageEmbed.Fields = []*discordgo.MessageEmbedField{
+			{
+				Name: values[3],
+				Value: values[4],
+			},
+		}
+
+		message := &discordgo.MessageSend {
+			Embed: messageEmbed,
+		}
+		_, err := s.ChannelMessageSendComplex(m.ChannelID, message)
+
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	if m.Content == ".db" {
