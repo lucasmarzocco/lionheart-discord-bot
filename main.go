@@ -2,7 +2,6 @@ package main
 
 import (
 	fb "discord/internal/resources"
-	"flag"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/robfig/cron/v3"
@@ -29,9 +28,6 @@ var (
 )
 
 func init() {
-	flag.StringVar(&Token, "t", os.Getenv("DISCORD_TOKEN"), "Bot Token")
-	flag.Parse()
-
 	//Emojis = fb.LoadData()
 	BotRoom = "765438490007175179"
 	Pods = "765514925531070502"
@@ -86,8 +82,10 @@ func main() {
 		port = "8000"
 	}
 
+	token := os.Getenv("DISCORD_TOKEN")
+
 	// Create a new Discord session using the provided bot token.
-	dg, err := discordgo.New("Bot " + Token)
+	dg, err := discordgo.New("Bot " + token)
 
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
@@ -128,7 +126,7 @@ func randomQuotes() {
 	fmt.Println("Create new cron")
 	c := cron.New()
 
-	c.AddFunc("0 14 * * *", quotes)
+	c.AddFunc("0 13 * * 0,1,3,5", quotes)
 
 	fmt.Println("Start cron")
 	c.Start()
@@ -330,7 +328,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if channel.Name == "anon-feedback" {
 		c, _ := s.GuildChannels(m.GuildID)
 		for _, channel := range c {
-			if channel.Name == "mod-feedback" {
+			if channel.Name == "internal-feedback" {
 				s.ChannelMessageDelete(m.ChannelID, m.ID)
 				s.ChannelMessageSend(channel.ID, "User ID: "+m.Author.ID+" ("+m.Author.String()+") has submitted feedback: \n"+m.Content)
 				return
