@@ -96,7 +96,7 @@ func main() {
 
 	// Register the messageCreate func as a callback for MessageCreate events.
 	dg.AddHandler(messageCreate)
-	//dg.AddHandler(discordJoin)
+	dg.AddHandler(discordJoin)
 	//dg.AddHandler(messageReactAdd)
 
 	// In this example, we only care about receiving message events.
@@ -186,9 +186,9 @@ func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 }
 
 func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
-	user, _ := s.UserChannelCreate(m.User.ID)
+	s.ChannelMessageSend("783234748033925150", "Welcome to Lionheart, " + m.User.Username + "!")
 
-	s.ChannelMessageSend(user.ID, "Welcome to Lionheart! \n\n "+
+	/*s.ChannelMessageSend(user.ID, "Welcome to Lionheart! \n\n "+
 
 		"#rules - Explains our rules and code of conduct while in Lionheart. \n "+
 		"#questions - Got questions? Ask here! \n\n "+
@@ -202,7 +202,7 @@ func discordJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 		"https://calendly.com/juan-lionheart/welcome-to-lionheart \n\n"+
 
 		"Thanks for joining. Reach out to any of the Admins or Mods if you need any assistance during your journey.")
-
+*/
 
 	roles, _ := s.GuildRoles(m.GuildID)
 	for _, role := range roles {
