@@ -242,6 +242,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				QUOTES[ind] = QUOTES[len(QUOTES)-1]
 				QUOTES = QUOTES[0:len(QUOTES)-1]
 				s.ChannelMessageSend(m.ChannelID, "Quote deleted: " + delete)
+				return
 			}
 		}
 		s.ChannelMessageSend(m.ChannelID, "Quote not found")
