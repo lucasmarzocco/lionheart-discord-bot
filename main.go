@@ -230,6 +230,24 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
+	if strings.Contains(m.Content, ".addquote") {
+		QUOTES = append(QUOTES, m.Content[10:])
+		s.ChannelMessageSend(m.ChannelID, "Quote added: " + m.Content[10:])
+	}
+
+	if strings.Contains(m.Content, ".deletequote") {
+		delete := m.Content[13:]
+		for ind, ele := range QUOTES {
+			if ele == delete {
+				QUOTES[ind] = QUOTES[len(QUOTES)-1]
+				QUOTES = QUOTES[0:len(QUOTES)-1]
+				s.ChannelMessageSend(m.ChannelID, "Quote deleted: " + delete)
+			}
+		}
+		s.ChannelMessageSend(m.ChannelID, "Quote not found")
+	}
+
+
 	if m.Content == ".alive" {
 		s.ChannelMessageSend(m.ChannelID, "Hello, yes, I'm alive, good sir.")
 	}

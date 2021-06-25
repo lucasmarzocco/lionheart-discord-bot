@@ -6,7 +6,7 @@ import (
 )
 
 var(
-	QUOTES = [...]string{
+	QUOTES = []string{
 		"Have the courage to follow your heart and your intuition. They somehow already know what you truly want to become. - Steve Jobs",
 		"Perfection is attained, not when there is nothing more to add, but when there is nothing more to take away. - Antoine de Saint Exupéry, French writer",
 		"After love, the sense of productivity is the most fulfilling emotion.",
