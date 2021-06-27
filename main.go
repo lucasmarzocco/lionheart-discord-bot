@@ -1,10 +1,14 @@
 package main
 
 import (
+	"crypto/tls"
 	fb "discord/internal/resources"
+	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/robfig/cron/v3"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"os/signal"
 	"regexp"
@@ -26,6 +30,11 @@ var (
 	Quotes string
 	Commands map[string]string
 )
+
+type Health struct {
+	Status int `json:"status"`
+	Timestamp time.Time `json:"timestamp"`
+}
 
 func init() {
 	//Emojis = fb.LoadData()
@@ -221,14 +230,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Content == ".test" {
+	/*if m.Content == ".test" {
 		roles, _ := s.GuildRoles(m.GuildID)
 		for _, role := range roles {
 			if val, ok := Roles[role.Name]; ok {
 				s.ChannelMessageSend(m.ChannelID, "Role: " + role.Name + "found: " + val)
 			}
 		}
-	}
+	} */
 
 	if strings.Contains(m.Content, ".addquote") {
 		QUOTES = append(QUOTES, m.Content[10:])
@@ -248,9 +257,49 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Quote not found")
 	}
 
+	if m.Content == ".health" {
+		api := "http://35.236.38.223:8888/health"
+		payments := "https://payments.lion.app:9999/health"
+		s.ChannelMessageSend(m.ChannelID, "Checking to see if bot is up and running...")
+		s.ChannelMessageSend(m.ChannelID, "MufasaBot: ✅")
+		s.ChannelMessageSend(m.ChannelID, "Checking to see if API is up and running...")
+		time.Sleep(time.Second * 3)
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		client := &http.Client{Transport: tr}
 
-	if m.Content == ".alive" {
-		s.ChannelMessageSend(m.ChannelID, "Hello, yes, I'm alive, good sir.")
+		response, err := client.Get(api)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer response.Body.Close()
+		content, _ := ioutil.ReadAll(response.Body)
+		var health1 Health
+		json.Unmarshal(content, &health1)
+
+		if health1.Status == 200 {
+			s.ChannelMessageSend(m.ChannelID, "API: ✅")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, "API: ❌")
+		}
+		s.ChannelMessageSend(m.ChannelID, "Checking to see if payments is up and running...")
+		time.Sleep(time.Second * 3)
+
+		response, err = client.Get(payments)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer response.Body.Close()
+		content, _ = ioutil.ReadAll(response.Body)
+		var health2 Health
+		json.Unmarshal(content, &health2)
+
+		if health2.Status == 200 {
+			s.ChannelMessageSend(m.ChannelID, "Payments: ✅")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, "Payments: ❌")
+		}
 	}
 
 	if m.Content == ".clean" {
@@ -301,12 +350,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	if m.Content == ".db" {
+	/*if m.Content == ".db" {
 		fb.GetUsers()
 		val := fb.GetNumUsers()
 		num := strconv.Itoa(val)
 		s.ChannelMessageSend(m.ChannelID, "There are currently "+num+" users who have taken the test.")
-	}
+	} */
 
 	/*if m.Content == ".help" {
 		help := ""
@@ -355,7 +404,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	if channel.Name == "3-bot-room" {
+	/*if channel.Name == "3-bot-room" {
 		if strings.Contains(m.Content, ".verify") {
 			values := strings.Split(m.Content, " ")
 
@@ -380,11 +429,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 		}
-	}
+	}*/
 
-	if channel.Name == "4-skill-selection" {
+	/*if channel.Name == "4-skill-selection" {
 		fmt.Println("That ^ message ID is: " + m.Message.ID)
-	}
+	} */
 }
 
 func fixPhoneNumber(number string) string {
