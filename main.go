@@ -291,6 +291,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		response, err = client.Get(payments)
 		if err != nil {
+			fmt.Println(err)
+			s.ChannelMessageSend(m.ChannelID, "Payments: ❌")
+		}else {
 			defer response.Body.Close()
 			content, _ := ioutil.ReadAll(response.Body)
 			var health2 Health
