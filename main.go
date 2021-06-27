@@ -149,7 +149,7 @@ func quotes() {
 }
 
 func getHealth() {
-	api := "http://35.236.38.223:8888/"
+	api := "http://35.236.38.223:8888/health"
 	payments := "https://payments.lion.app:9999/health"
 	Session.ChannelMessageSend(HealthChecks, "Checking to see if bot is up and running...")
 	Session.ChannelMessageSend(HealthChecks, "MufasaBot: ✅")
