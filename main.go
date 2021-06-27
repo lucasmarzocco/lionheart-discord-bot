@@ -272,33 +272,35 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		response, err := client.Get(api)
 		if err != nil {
 			fmt.Println(err)
-		}
-		defer response.Body.Close()
-		content, _ := ioutil.ReadAll(response.Body)
-		var health1 Health
-		json.Unmarshal(content, &health1)
-
-		if health1.Status == 200 {
-			s.ChannelMessageSend(m.ChannelID, "API: ✅")
-		} else {
 			s.ChannelMessageSend(m.ChannelID, "API: ❌")
+		}else {
+			defer response.Body.Close()
+			content, _ := ioutil.ReadAll(response.Body)
+			var health1 Health
+			json.Unmarshal(content, &health1)
+
+			if health1.Status == 200 {
+				s.ChannelMessageSend(m.ChannelID, "API: ✅")
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "API: ❌")
+			}
 		}
+
 		s.ChannelMessageSend(m.ChannelID, "Checking to see if payments is up and running...")
 		time.Sleep(time.Second * 3)
 
 		response, err = client.Get(payments)
 		if err != nil {
-			fmt.Println(err)
-		}
-		defer response.Body.Close()
-		content, _ = ioutil.ReadAll(response.Body)
-		var health2 Health
-		json.Unmarshal(content, &health2)
+			defer response.Body.Close()
+			content, _ := ioutil.ReadAll(response.Body)
+			var health2 Health
+			json.Unmarshal(content, &health2)
 
-		if health2.Status == 200 {
-			s.ChannelMessageSend(m.ChannelID, "Payments: ✅")
-		} else {
-			s.ChannelMessageSend(m.ChannelID, "Payments: ❌")
+			if health2.Status == 200 {
+				s.ChannelMessageSend(m.ChannelID, "Payments: ✅")
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "Payments: ❌")
+			}
 		}
 	}
 
