@@ -311,7 +311,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".health" {
-
+		getHealth()
 	}
 
 	if m.Content == ".clean" {
