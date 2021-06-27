@@ -29,6 +29,7 @@ var (
 	Roles   map[string]string
 	Quotes string
 	Commands map[string]string
+	HealthChecks string
 )
 
 type Health struct {
@@ -42,6 +43,7 @@ func init() {
 	Pods = "765514925531070502"
 	Errors = "768057592115101746"
 	Quotes = "803545216464322570"
+	HealthChecks = "858825004380717066"
 
 	Roles = map[string]string{
 		"Adventurousness":      "Perception",
@@ -111,7 +113,7 @@ func main() {
 	// In this example, we only care about receiving message events.
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
-	randomQuotes()
+	crons()
 
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
@@ -130,12 +132,13 @@ func main() {
 	dg.Close()
 }
 
-func randomQuotes() {
+func crons() {
 
 	fmt.Println("Create new cron")
 	c := cron.New()
 
 	c.AddFunc("0 13 * * 0,1,3,5", quotes)
+	c.AddFunc("*/30 * * * *", getHealth)
 
 	fmt.Println("Start cron")
 	c.Start()
@@ -143,6 +146,56 @@ func randomQuotes() {
 
 func quotes() {
 	Session.ChannelMessageSend(Quotes, GetQuote())
+}
+
+func getHealth() {
+	api := "http://35.236.38.223:8888/"
+	payments := "https://payments.lion.app:9999/health"
+	Session.ChannelMessageSend(HealthChecks, "Checking to see if bot is up and running...")
+	Session.ChannelMessageSend(HealthChecks, "MufasaBot: ✅")
+	Session.ChannelMessageSend(HealthChecks, "Checking to see if API is up and running...")
+	time.Sleep(time.Second * 3)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+
+	response, err := client.Get(api)
+	if err != nil {
+		fmt.Println(err)
+		Session.ChannelMessageSend(HealthChecks, "API: ❌")
+	}else {
+		defer response.Body.Close()
+		content, _ := ioutil.ReadAll(response.Body)
+		var health1 Health
+		json.Unmarshal(content, &health1)
+
+		if health1.Status == 200 {
+			Session.ChannelMessageSend(HealthChecks, "API: ✅")
+		} else {
+			Session.ChannelMessageSend(HealthChecks, "API: ❌")
+		}
+	}
+
+	Session.ChannelMessageSend(HealthChecks, "Checking to see if payments is up and running...")
+	time.Sleep(time.Second * 3)
+
+	response, err = client.Get(payments)
+	if err != nil {
+		fmt.Println(err)
+		Session.ChannelMessageSend(HealthChecks, "Payments: ❌")
+	}else {
+		defer response.Body.Close()
+		content, _ := ioutil.ReadAll(response.Body)
+		var health2 Health
+		json.Unmarshal(content, &health2)
+
+		if health2.Status == 200 {
+			Session.ChannelMessageSend(HealthChecks, "Payments: ✅")
+		} else {
+			Session.ChannelMessageSend(HealthChecks, "Payments: ❌")
+		}
+	}
 }
 
 func messageReactAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
@@ -258,53 +311,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".health" {
-		api := "http://35.236.38.223:8888/health"
-		payments := "https://payments.lion.app:9999/health"
-		s.ChannelMessageSend(m.ChannelID, "Checking to see if bot is up and running...")
-		s.ChannelMessageSend(m.ChannelID, "MufasaBot: ✅")
-		s.ChannelMessageSend(m.ChannelID, "Checking to see if API is up and running...")
-		time.Sleep(time.Second * 3)
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		client := &http.Client{Transport: tr}
 
-		response, err := client.Get(api)
-		if err != nil {
-			fmt.Println(err)
-			s.ChannelMessageSend(m.ChannelID, "API: ❌")
-		}else {
-			defer response.Body.Close()
-			content, _ := ioutil.ReadAll(response.Body)
-			var health1 Health
-			json.Unmarshal(content, &health1)
-
-			if health1.Status == 200 {
-				s.ChannelMessageSend(m.ChannelID, "API: ✅")
-			} else {
-				s.ChannelMessageSend(m.ChannelID, "API: ❌")
-			}
-		}
-
-		s.ChannelMessageSend(m.ChannelID, "Checking to see if payments is up and running...")
-		time.Sleep(time.Second * 3)
-
-		response, err = client.Get(payments)
-		if err != nil {
-			fmt.Println(err)
-			s.ChannelMessageSend(m.ChannelID, "Payments: ❌")
-		}else {
-			defer response.Body.Close()
-			content, _ := ioutil.ReadAll(response.Body)
-			var health2 Health
-			json.Unmarshal(content, &health2)
-
-			if health2.Status == 200 {
-				s.ChannelMessageSend(m.ChannelID, "Payments: ✅")
-			} else {
-				s.ChannelMessageSend(m.ChannelID, "Payments: ❌")
-			}
-		}
 	}
 
 	if m.Content == ".clean" {
