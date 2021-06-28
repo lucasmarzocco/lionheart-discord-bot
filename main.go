@@ -151,10 +151,6 @@ func quotes() {
 func getHealth() {
 	api := "http://35.236.38.223:8888/health"
 	payments := "https://payments.lion.app:9999/health"
-	Session.ChannelMessageSend(HealthChecks, "Checking to see if bot is up and running...")
-	Session.ChannelMessageSend(HealthChecks, "MufasaBot: ✅")
-	Session.ChannelMessageSend(HealthChecks, "Checking to see if API is up and running...")
-	time.Sleep(time.Second * 3)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
@@ -163,37 +159,30 @@ func getHealth() {
 	response, err := client.Get(api)
 	if err != nil {
 		fmt.Println(err)
-		Session.ChannelMessageSend(HealthChecks, "API: ❌")
+		Session.ChannelMessageSend(HealthChecks, "WARNING: API: ❌")
 	}else {
 		defer response.Body.Close()
 		content, _ := ioutil.ReadAll(response.Body)
 		var health1 Health
 		json.Unmarshal(content, &health1)
 
-		if health1.Status == 200 {
-			Session.ChannelMessageSend(HealthChecks, "API: ✅")
-		} else {
-			Session.ChannelMessageSend(HealthChecks, "API: ❌")
+		if health1.Status != 200 {
+			Session.ChannelMessageSend(HealthChecks, "WARNING: API: ❌")
 		}
 	}
-
-	Session.ChannelMessageSend(HealthChecks, "Checking to see if payments is up and running...")
-	time.Sleep(time.Second * 3)
 
 	response, err = client.Get(payments)
 	if err != nil {
 		fmt.Println(err)
-		Session.ChannelMessageSend(HealthChecks, "Payments: ❌")
+		Session.ChannelMessageSend(HealthChecks, "WARNING: Payments: ❌")
 	}else {
 		defer response.Body.Close()
 		content, _ := ioutil.ReadAll(response.Body)
 		var health2 Health
 		json.Unmarshal(content, &health2)
 
-		if health2.Status == 200 {
-			Session.ChannelMessageSend(HealthChecks, "Payments: ✅")
-		} else {
-			Session.ChannelMessageSend(HealthChecks, "Payments: ❌")
+		if health2.Status != 200 {
+			Session.ChannelMessageSend(HealthChecks, "WARNING: Payments: ❌")
 		}
 	}
 }
